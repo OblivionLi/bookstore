@@ -15,6 +15,10 @@ const getBookReviews = (bookId: number, page: number) => {
 }
 
 const calculateBookPrice = (price: number, discount: number): number => {
+    if (discount == 0) {
+        return price;
+    }
+
     const discountAmount = (discount / 100) * price;
     return price - discountAmount;
 }

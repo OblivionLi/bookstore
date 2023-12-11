@@ -29,4 +29,5 @@ public class BookResponse {
     private String fileFormat;
     private List<RatingResponse> ratings;
     private double averageBookRating;
+    private Integer quantity;
 }

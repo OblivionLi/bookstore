@@ -8,16 +8,21 @@ import BookReviews from "./review/BookReviews";
 import StarRating from "../../../components/Rating";
 import Spinner from "../../../components/Spinner";
 import Breadcrumb from "../../../components/breadcrumb/Breadcrumb";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 const ShowBook = () => {
     const {id} = useParams<{ id: string }>();
     const [book, setBook] = useState<IBooksData | undefined>();
     const [bookPriceWithDiscount, setBookPriceWithDiscount] = useState("0.00");
     const [loading, setLoading] = useState(true);
+    const [isInCart, setIsInCart] = useState(false);
 
     useEffect(() => {
         if (id) {
             fetchBook();
+
+            const itemInCart = LocalStorageService.isItemInCart(parseInt(id))
+            setIsInCart(itemInCart);
         }
     }, [id]);
 
@@ -34,7 +39,6 @@ const ShowBook = () => {
 
                 setBookPriceWithDiscount(discountedPrice.toFixed(2));
                 setLoading(false);
-                console.log(response?.data);
             })
             .catch((e: Error) => {
                 console.log(e);
@@ -44,6 +48,17 @@ const ShowBook = () => {
 
     if (loading) {
         return <div className="spinner"><Spinner /></div>;
+    }
+
+    const addToCart = () => {
+        const cartItemCount = LocalStorageService.getCartItemCount();
+
+        if (book && cartItemCount < 15 && !isInCart) {
+            LocalStorageService.addItemToCartStorage(book);
+            setIsInCart(true);
+        } else {
+            console.log("Couldn't find book to add to cart storage.")
+        }
     }
 
     return (
@@ -66,7 +81,9 @@ const ShowBook = () => {
                         <p>ISBN: {book?.isbn}</p>
                         <p>Discount: {book?.discount} %</p>
                         <p>Price: <del>{book?.price} &euro;</del> | {bookPriceWithDiscount} &euro;</p>
-                        <button>Add to cart</button>
+                        <button type="button" className={isInCart ? 'btn btn-secondary' : 'btn btn-outline-success'} onClick={() => addToCart()} disabled={isInCart}>
+                            {isInCart ? 'In cart' : 'Add to cart'}
+                        </button>
                     </div>
                 </div>
                 <hr/>

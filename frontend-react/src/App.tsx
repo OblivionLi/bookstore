@@ -6,6 +6,7 @@ import ShowBook from "./screens/public/book/ShowBook";
 import Login from "./screens/public/auth/Login";
 import Register from "./screens/public/auth/Register";
 import UserSettings from "./screens/public/user/setting/UserSettings";
+import CartScreen from "./screens/public/cart/CartScreen";
 
 function App() {
     return (
@@ -20,6 +21,9 @@ function App() {
 
             {/* User settings */}
             <Route path={"/user-settings/*"} element={<UserSettings/>} />
+
+            {/*  Cart  */}
+            <Route path={"/cart"} element={<CartScreen/>}/>
         </Routes>
 
         // <div>

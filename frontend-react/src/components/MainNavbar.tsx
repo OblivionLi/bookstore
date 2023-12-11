@@ -7,6 +7,7 @@ function MainNavbar() {
 
     const isUserLogged = LocalStorageService.isUserLogged();
     const username = LocalStorageService.getUsernameFromLocalStorage();
+    const itemsInCartCount = LocalStorageService.getCartItemCount();
 
     const handleLogout = () => {
         LocalStorageService.logoutUser();
@@ -28,6 +29,17 @@ function MainNavbar() {
                             <Link className="nav-link active" aria-current="page" to={"/"}>Home</Link>
                         </li>
 
+                        <li className="nav-item">
+                            <Link className="nav-link position-relative btn btn-primary" aria-current="page" to={"/cart"}>
+                                Cart
+                                <span
+                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {itemsInCartCount}
+                                    <span className="visually-hidden">unread messages</span>
+                                </span>
+                            </Link>
+                        </li>
+
                         <form className="d-flex" role="search">
                             <input className="form-control me-2" type="search" placeholder="Search"
                                    aria-label="Search"/>
@@ -47,7 +59,10 @@ function MainNavbar() {
                                     <li>
                                         <hr className="dropdown-divider"/>
                                     </li>
-                                    <li><button className="dropdown-item" type="button" onClick={handleLogout}>Logout</button></li>
+                                    <li>
+                                        <button className="dropdown-item" type="button" onClick={handleLogout}>Logout
+                                        </button>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>

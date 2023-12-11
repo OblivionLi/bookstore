@@ -219,7 +219,16 @@ public class BookService {
                 .fileFormat(getBookFileDetails(book).get("fileFormat"))
                 .ratings(getBookRatingDetails(book.getRatings()))
                 .averageBookRating(getAverageBookRating(book))
+                .quantity(getBookQuantity(book))
                 .build();
+    }
+
+    private Integer getBookQuantity(Book book) {
+        if (book instanceof NormalBook) {
+            return ((NormalBook) book).getQuantity();
+        }
+
+        return null;
     }
 
     private List<RatingResponse> getBookRatingDetails(Set<BookRating> ratings) {

@@ -16,6 +16,7 @@ export default interface IBooksData {
     ratings: RatingResponse[];
     averageBookRating: number;
     fileFormat: string;
+    quantity: number
 }
 
 export interface RatingResponse {

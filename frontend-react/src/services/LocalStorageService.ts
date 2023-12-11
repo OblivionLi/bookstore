@@ -1,5 +1,6 @@
 import * as jose from 'jose';
 import IUserTokenDecodedData from "../types/IUserTokenDecodedData";
+import IBooksData from "../types/IBooksData";
 
 const isUserLogged = () => {
     const token = localStorage.getItem("userInfo");
@@ -73,6 +74,63 @@ const getUserPermissions = () => {
     }
 }
 
+const addItemToCartStorage = (book: IBooksData) => {
+    const existingCartData = localStorage.getItem("cart");
+    const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
+
+    if (cartArray.length < 15) {
+        cartArray.push(book);
+        localStorage.setItem("cart", JSON.stringify(cartArray));
+    }
+}
+
+const isItemInCart = (id: number | undefined) => {
+    if (!id) {
+        return false;
+    }
+
+    const existingCartData = localStorage.getItem("cart");
+    const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
+
+    for (let i = 0; i < cartArray.length; i++) {
+        if (cartArray[i].id === id) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const getAllCartItems = () => {
+    const existingCartData = localStorage.getItem("cart");
+    return existingCartData ? JSON.parse(existingCartData) : [];
+}
+
+const getCartItemCount = () => {
+    const existingCartData = localStorage.getItem("cart");
+    const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
+    return cartArray.length;
+}
+
+const removeItemFromCart = (id: number) => {
+    if (id === null) {
+        return false;
+    }
+
+    const existingCartData = localStorage.getItem("cart");
+    const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
+
+    const itemIndex = cartArray.findIndex((item: IBooksData) => item.id === id);
+
+    if (itemIndex !== -1) {
+        cartArray.splice(itemIndex, 1);
+        localStorage.setItem("cart", JSON.stringify(cartArray));
+        return true;
+    }
+
+    return false;
+}
+
 const LocalStorageService = {
     addUserTokenToLocalStorage,
     getUserPermissions,
@@ -80,7 +138,12 @@ const LocalStorageService = {
     isUserLogged,
     getUsernameFromLocalStorage,
     logoutUser,
-    getUserData
+    getUserData,
+    addItemToCartStorage,
+    getCartItemCount,
+    isItemInCart,
+    getAllCartItems,
+    removeItemFromCart
 }
 
 export default LocalStorageService;

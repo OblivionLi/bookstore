@@ -29,7 +29,6 @@ function BooksList() {
             .then((response: any) => {
                 setBooks(response.data?.content);
                 setTotalPages(response.data?.totalPages)
-                console.log(response.data);
             })
             .catch((e: Error) => {
                 console.log(e);
