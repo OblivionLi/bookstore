@@ -3,8 +3,9 @@ import MainNavbar from "../../../components/MainNavbar";
 import Breadcrumb from "../../../components/breadcrumb/Breadcrumb";
 import LocalStorageService from "../../../services/LocalStorageService";
 import IBooksData from "../../../types/IBooksData";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import BooksService from "../../../services/BooksService";
+import CartSummary from "../../../components/cart/CartSummary";
 
 const CartScreen = () => {
     const navigate = useNavigate();
@@ -16,32 +17,6 @@ const CartScreen = () => {
         if (isItemDeleted) {
             navigate("/cart")
         }
-    }
-
-    const showItemsSubtotal = () => {
-        let subtotal = 0;
-        for (let i = 0; i < cartItems.length; i++) {
-            if (cartItems[i].quantity !== null) {
-                subtotal += cartItems[i].price * cartItems[i].quantity;
-            } else {
-                subtotal += cartItems[i].price;
-            }
-        }
-
-        return subtotal.toFixed(2);
-    }
-
-    const showItemsTotal = () => {
-        let subtotal = 0;
-        for (let i = 0; i < cartItems.length; i++) {
-            if (cartItems[i].quantity !== null) {
-                subtotal += BooksService.calculateBookPrice(cartItems[i].price, cartItems[i].discount) * cartItems[i].quantity;
-            } else {
-                subtotal += BooksService.calculateBookPrice(cartItems[i].price, cartItems[i].discount);
-            }
-        }
-
-        return subtotal.toFixed(2);
     }
 
     return (
@@ -84,13 +59,10 @@ const CartScreen = () => {
                             </table>
                         </div>
                         <div className="col">
-                            <h4>Subtotal</h4>
-                            <p>{showItemsSubtotal()} &euro;</p>
-                            <hr/>
-                            <h4>Total with discount</h4>
-                            <p>{showItemsTotal()} &euro;</p>
-                            <hr/>
-                            <button className="btn btn-primary">Proceed to checkout</button>
+                            <CartSummary />
+                            <button className="btn btn-primary">
+                                <Link to={'/cart/shipping'}>Proceed to checkout</Link>
+                            </button>
                         </div>
                     </div>
                 ) : (

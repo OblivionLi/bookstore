@@ -3,6 +3,7 @@ import IUserDtoResponse from "../types/IUserDtoResponse";
 import LocalStorageService from "./LocalStorageService";
 import {IUserShippingAddress} from "../types/IUserShippingAddress";
 import {IUserBillingAddress} from "../types/IUserBillingAddress";
+import IUserDefaultAddress from "../types/IUserDefaultAddress";
 
 const registerUser = (formData: object) => {
     return axios.post<Array<IUserDtoResponse>>(`/api/auth/register`, JSON.stringify(formData), {
@@ -30,7 +31,7 @@ const updateUserDetails = (formData: object) => {
 }
 
 const getAllShippingAddresses = () => {
-    return axios.get<Array<IUserShippingAddress>>(`api/user/shipping-address`, {
+    return axios.get<Array<IUserShippingAddress>>(`/api/user/shipping-address`, {
         headers: {
             'Content-Type': 'application/json',
                 'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
@@ -39,7 +40,7 @@ const getAllShippingAddresses = () => {
 }
 
 const getAllBillingAddresses = () => {
-    return axios.get<Array<IUserBillingAddress>>(`api/user/billing-address`, {
+    return axios.get<Array<IUserBillingAddress>>(`/api/user/billing-address`, {
         headers: {
             'Content-Type': 'application/json',
                 'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
@@ -49,7 +50,7 @@ const getAllBillingAddresses = () => {
 
 const deleteAddress = (id: number, type: string) => {
     const addressIdAndTypeToDelete = id + ":" + type;
-    return axios.delete(`api/user/address/${addressIdAndTypeToDelete}/delete`, {
+    return axios.delete(`/api/user/address/${addressIdAndTypeToDelete}/delete`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
@@ -58,7 +59,7 @@ const deleteAddress = (id: number, type: string) => {
 }
 
 const markAddressAsDefault = (id: number, addressType: string) => {
-    return axios.patch(`api/user/address/${id}/mark-default`, {addressType},{
+    return axios.patch(`/api/user/address/${id}/mark-default`, {addressType},{
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
@@ -67,7 +68,7 @@ const markAddressAsDefault = (id: number, addressType: string) => {
 }
 
 const updateAddress = (address: IUserShippingAddress | IUserBillingAddress) => {
-    return axios.patch(`api/user/edit-address`, address, {
+    return axios.patch(`/api/user/edit-address`, address, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
@@ -76,7 +77,25 @@ const updateAddress = (address: IUserShippingAddress | IUserBillingAddress) => {
 }
 
 const saveAddress = (address: IUserShippingAddress | IUserBillingAddress) => {
-    return axios.post(`api/user/add-address`, address, {
+    return axios.post(`/api/user/add-address`, address, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
+const getDefaultShippingAddress = () => {
+    return axios.get(`/api/user/default/shipping-address`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
+const getDefaultBillingAddress = () => {
+    return axios.get<IUserDefaultAddress>(`/api/user/default/billing-address`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
@@ -93,7 +112,9 @@ const UsersService = {
     deleteAddress,
     markAddressAsDefault,
     updateAddress,
-    saveAddress
+    saveAddress,
+    getDefaultShippingAddress,
+    getDefaultBillingAddress
 };
 
 export default UsersService;
