@@ -6,7 +6,7 @@ import com.balaur.bookstore.backend.request.user.UserAddressRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class UserAddressDto {
+public class UserAddressMappingDto {
     public static UserBillingAddress mapBillingAddressAttributes(UserBillingAddress userBillingAddress, UserAddressRequest request) {
 
         if (request.getCity() != null && !request.getCity().isEmpty()) {
@@ -69,10 +69,6 @@ public class UserAddressDto {
 
         if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
             userShippingAddress.setPhoneNumber(request.getPhoneNumber());
-        }
-
-        if (request.getDeliveryNotes() != null && !request.getDeliveryNotes().isEmpty()) {
-            userShippingAddress.setDeliveryNotes(request.getDeliveryNotes());
         }
 
         userShippingAddress.setDefault(request.isDefault());

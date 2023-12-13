@@ -2,7 +2,7 @@ import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import UsersService from "../../../../services/UsersService";
 import LocalStorageService from "../../../../services/LocalStorageService";
 import {useNavigate} from "react-router-dom";
-import IUserTokenDecodedData from "../../../../types/IUserTokenDecodedData";
+import IUserTokenDecodedData from "../../../../types/user/IUserTokenDecodedData";
 
 const UserDetails = ({ userData }: { userData: IUserTokenDecodedData }) => {
     const navigate = useNavigate();

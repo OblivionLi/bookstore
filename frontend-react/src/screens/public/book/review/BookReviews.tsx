@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import BooksService from "../../../../services/BooksService";
 import Pagination from "../../../../components/Pagination";
-import IBookReviews from "../../../../types/IBookReviews";
+import IBookReviews from "../../../../types/book/IBookReviews";
 import "../../../../styles.css";
 import StarRating from "../../../../components/Rating";
 

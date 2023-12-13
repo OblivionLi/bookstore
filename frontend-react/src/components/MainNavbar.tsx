@@ -54,7 +54,7 @@ function MainNavbar() {
                                     {username}
                                 </a>
                                 <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" href="#">History</a></li>
+                                    <li><Link className="dropdown-item" to="/user-history">History</Link></li>
                                     <li><Link className="dropdown-item" to="/user-settings">Settings</Link></li>
                                     <li>
                                         <hr className="dropdown-divider"/>

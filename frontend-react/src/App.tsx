@@ -8,6 +8,7 @@ import Register from "./screens/public/auth/Register";
 import UserSettings from "./screens/public/user/setting/UserSettings";
 import CartScreen from "./screens/public/cart/CartScreen";
 import ShippingScreen from "./screens/public/cart/ShippingScreen";
+import OrderHistoryScreen from "./screens/public/user/history/OrderHistoryScreen";
 
 function App() {
     return (
@@ -26,6 +27,9 @@ function App() {
             {/*  Cart  */}
             <Route path={"/cart"} element={<CartScreen/>}/>
             <Route path={"/cart/shipping"} element={<ShippingScreen/>}/>
+
+            {/*  User orders  */}
+            <Route path={"/user-history"} element={<OrderHistoryScreen/>} />
         </Routes>
 
         // <div>

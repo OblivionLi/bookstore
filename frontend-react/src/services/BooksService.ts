@@ -1,6 +1,6 @@
 import axios from "axios";
-import IBooksData from "../types/IBooksData";
-import IBookReviews from "../types/IBookReviews";
+import IBooksData from "../types/book/IBooksData";
+import IBookReviews from "../types/book/IBookReviews";
 
 const getAllBooks = (page: number) => {
     return axios.get<Array<IBooksData>>(`/api/book?page=${page}`);

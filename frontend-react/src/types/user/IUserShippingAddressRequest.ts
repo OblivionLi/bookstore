@@ -6,5 +6,4 @@ export default interface IUserShippingAddressRequest {
     phoneNumber: string | undefined;
     zipcode: string | undefined;
     recipientName: string | undefined;
-    deliveryNotes: string | undefined;
 }

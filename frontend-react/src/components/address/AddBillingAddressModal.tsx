@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import IAddAddressModalProps from "../../types/IAddAddressModalProps";
+import IAddAddressModalProps from "../../types/user/IAddAddressModalProps";
 import UsersService from "../../services/UsersService";
 
 const AddBillingAddressModal: React.FC<IAddAddressModalProps> = ({onSave}) => {

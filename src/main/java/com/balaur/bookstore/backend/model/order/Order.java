@@ -35,4 +35,10 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderLineItem> orderLineItems;
     private String notes;
+    @ManyToOne
+    @JoinColumn(name = "order_shipping_address_id")
+    private OrderShippingAddress orderShippingAddress;
+    @ManyToOne
+    @JoinColumn(name = "order_billing_address_id")
+    private OrderBillingAddress orderBillingAddress;
 }

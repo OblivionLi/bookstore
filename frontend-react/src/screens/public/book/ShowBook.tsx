@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import IBooksData from "../../../types/IBooksData";
+import IBooksData from "../../../types/book/IBooksData";
 import BooksService from "../../../services/BooksService";
 import {useParams} from "react-router-dom";
 import MainNavbar from "../../../components/MainNavbar";

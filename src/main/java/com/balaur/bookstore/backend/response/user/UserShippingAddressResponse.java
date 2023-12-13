@@ -18,6 +18,5 @@ public class UserShippingAddressResponse {
     private String phoneNumber;
     private String zipcode;
     private String recipientName;
-    private String deliveryNotes;
     private boolean isDefault;
 }

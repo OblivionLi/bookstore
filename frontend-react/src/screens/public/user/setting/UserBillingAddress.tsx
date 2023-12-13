@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {IUserBillingAddress} from "../../../../types/IUserBillingAddress";
+import {IUserBillingAddress} from "../../../../types/user/IUserBillingAddress";
 import UsersService from "../../../../services/UsersService";
 import AddBillingAddressModal from "../../../../components/address/AddBillingAddressModal";
 import EditBillingAddressModal from "../../../../components/address/EditBillingAddressModal";

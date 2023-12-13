@@ -3,22 +3,28 @@ import MainNavbar from "../../../components/MainNavbar";
 import BreadcrumbMulti from "../../../components/breadcrumb/BreadcrumbMulti";
 import CartSummary from "../../../components/cart/CartSummary";
 import LocalStorageService from "../../../services/LocalStorageService";
-import {Link} from "react-router-dom";
-import IBooksData from "../../../types/IBooksData";
+import IBooksData from "../../../types/book/IBooksData";
 import UsersService from "../../../services/UsersService";
 import EditShippingAddressModal from "../../../components/address/EditShippingAddressModal";
-import IUserDefaultAddress from "../../../types/IUserDefaultAddress";
+import IUserDefaultAddress from "../../../types/user/IUserDefaultAddress";
 import EditBillingAddressModal from "../../../components/address/EditBillingAddressModal";
-import IOrderItemRequest from "../../../types/IOrderItemRequest";
-import IUserShippingAddressRequest from "../../../types/IUserShippingAddressRequest";
-import IUserBillingAddressRequest from "../../../types/IUserBillingAddressRequest";
-import IPlaceOrderRequest from "../../../types/IPlaceOrderRequest";
+import IOrderItemRequest from "../../../types/order/IOrderItemRequest";
+import IUserShippingAddressRequest from "../../../types/user/IUserShippingAddressRequest";
+import IUserBillingAddressRequest from "../../../types/user/IUserBillingAddressRequest";
+import IPlaceOrderRequest from "../../../types/order/IPlaceOrderRequest";
+import OrdersService from "../../../services/OrdersService";
+import {Button, Modal} from "react-bootstrap";
+import IPlaceOrderResponse from "../../../types/order/IPlaceOrderResponse";
+import {useNavigate} from "react-router-dom";
 
 const ShippingScreen = () => {
+    const navigate = useNavigate();
     const cartItems = LocalStorageService.getAllCartItems();
     const [defaultShippingAddress, setDefaultShippingAddress] = useState(null);
     const [defaultBillingAddress, setDefaultBillingAddress] = useState(null);
     const [deliveryNotes, setDeliveryNotes] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [modalContent, setModalContent] = useState<IPlaceOrderResponse | null>(null);
 
     useEffect(() => {
         fetchDefaultShippingAddress();
@@ -76,6 +82,12 @@ const ShippingScreen = () => {
     const handleCloseModal = () => {
     };
 
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModalSuccess = () => {
+        setShowModal(false);
+        navigate("/user-history")
+    }
+
     const placeOrder = () => {
         let orderItems: IOrderItemRequest[] = [];
 
@@ -83,7 +95,7 @@ const ShippingScreen = () => {
             const orderItem: IOrderItemRequest = {
                 itemId: cartItems[i].id,
                 quantity: cartItems[i].quantity,
-                itemPrice: cartItems[i].itemPrice,
+                itemPrice: cartItems[i].price,
                 discount: cartItems[i].discount
             };
 
@@ -98,34 +110,40 @@ const ShippingScreen = () => {
             phoneNumber: mapToAddress(defaultShippingAddress)?.phoneNumber,
             zipcode: mapToAddress(defaultShippingAddress)?.zipcode,
             recipientName: mapToAddress(defaultShippingAddress)?.recipientName,
-            deliveryNotes: deliveryNotes
         }
 
         const userBillingAddress: IUserBillingAddressRequest = {
-            street: mapToAddress(defaultShippingAddress)?.street,
-            city: mapToAddress(defaultShippingAddress)?.city,
-            state: mapToAddress(defaultShippingAddress)?.state,
-            country: mapToAddress(defaultShippingAddress)?.country,
-            phoneNumber: mapToAddress(defaultShippingAddress)?.phoneNumber,
-            zipcode: mapToAddress(defaultShippingAddress)?.zipcode,
-            billingName: mapToAddress(defaultShippingAddress)?.billingName,
+            street: mapToAddress(defaultBillingAddress)?.street,
+            city: mapToAddress(defaultBillingAddress)?.city,
+            state: mapToAddress(defaultBillingAddress)?.state,
+            country: mapToAddress(defaultBillingAddress)?.country,
+            phoneNumber: mapToAddress(defaultBillingAddress)?.phoneNumber,
+            zipcode: mapToAddress(defaultBillingAddress)?.zipcode,
+            billingName: mapToAddress(defaultBillingAddress)?.billingName,
         }
 
         const placeOrder: IPlaceOrderRequest = {
             orderItems: orderItems,
+            deliveryNotes: deliveryNotes,
             userShippingAddress: userShippingAddress,
             userBillingAddress: userBillingAddress
         }
 
-        console.log(placeOrder);
-        // send placeOrder
+        OrdersService.placeOrder(placeOrder)
+            .then((response: any) => {
+                setModalContent(response.data as IPlaceOrderResponse);
+                handleShowModal();
+                LocalStorageService.removeItemsFromCart();
+            })
+            .catch((e: Error) => {
+                console.log(e);
+            });
     }
 
     const handleDeliveryNotesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDeliveryNotes(event.target.value);
     };
 
-    console.log(deliveryNotes)
     return (
         <>
             <MainNavbar/>
@@ -227,11 +245,37 @@ const ShippingScreen = () => {
                         <hr/>
                         <CartSummary/>
                         <button className="btn btn-primary" onClick={() => placeOrder()}>
-                            <Link to={'/cart/placeorder'}>Place Order</Link>
+                            {/*<Link to={'/cart/placeorder'}>Place Order</Link>*/}
                         </button>
                     </div>
                 </div>
             </div>
+
+            <Modal show={showModal} onHide={handleCloseModalSuccess}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Order Placed with Success</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {modalContent && (
+                        <div>
+                            <h4>Your physical items will be delivered at:</h4>
+                            <p>{modalContent.country}, {modalContent.city}, {modalContent.street}, {modalContent.zipcode}</p>
+                            <hr/>
+                            <h4>For recipient:</h4>
+                            <p>{modalContent.recipientName}, {modalContent.phoneNumber}</p>
+                            <hr/>
+                            <p>Taxes: {modalContent.shippingCost} &euro; (shipping cost) + {modalContent.taxAmount} &euro; (tax)</p>
+                            <hr/>
+                            <p>Total: {modalContent.orderTotal.toFixed(2)} &euro;</p>
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModalSuccess}>
+                        Confirm
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };

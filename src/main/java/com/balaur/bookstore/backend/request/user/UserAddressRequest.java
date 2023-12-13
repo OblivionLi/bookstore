@@ -25,7 +25,6 @@ public class UserAddressRequest {
     @JsonProperty
     private boolean isDefault;
     private String recipientName;
-    private String deliveryNotes;
 
     @Override
     public String toString() {
@@ -40,7 +39,6 @@ public class UserAddressRequest {
                 ", billingName='" + billingName + '\'' +
                 ", isDefault=" + isDefault +
                 ", recipientName='" + recipientName + '\'' +
-                ", deliveryNotes='" + deliveryNotes + '\'' +
                 '}';
     }
 }

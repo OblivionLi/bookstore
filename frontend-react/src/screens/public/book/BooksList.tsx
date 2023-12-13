@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import BooksService from "../../../services/BooksService";
 import '../../../styles.css'
-import IBooksData from "../../../types/IBooksData";
+import IBooksData from "../../../types/book/IBooksData";
 import Pagination from "../../../components/Pagination";
 import {Link} from "react-router-dom";
 import LocalStorageService from "../../../services/LocalStorageService";

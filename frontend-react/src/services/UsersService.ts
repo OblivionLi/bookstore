@@ -1,9 +1,9 @@
 import axios from "axios";
-import IUserDtoResponse from "../types/IUserDtoResponse";
+import IUserDtoResponse from "../types/user/IUserDtoResponse";
 import LocalStorageService from "./LocalStorageService";
-import {IUserShippingAddress} from "../types/IUserShippingAddress";
-import {IUserBillingAddress} from "../types/IUserBillingAddress";
-import IUserDefaultAddress from "../types/IUserDefaultAddress";
+import {IUserShippingAddress} from "../types/user/IUserShippingAddress";
+import {IUserBillingAddress} from "../types/user/IUserBillingAddress";
+import IUserDefaultAddress from "../types/user/IUserDefaultAddress";
 
 const registerUser = (formData: object) => {
     return axios.post<Array<IUserDtoResponse>>(`/api/auth/register`, JSON.stringify(formData), {

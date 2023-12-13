@@ -2,7 +2,7 @@ import React from 'react';
 import MainNavbar from "../../../components/MainNavbar";
 import Breadcrumb from "../../../components/breadcrumb/Breadcrumb";
 import LocalStorageService from "../../../services/LocalStorageService";
-import IBooksData from "../../../types/IBooksData";
+import IBooksData from "../../../types/book/IBooksData";
 import {Link, useNavigate} from "react-router-dom";
 import BooksService from "../../../services/BooksService";
 import CartSummary from "../../../components/cart/CartSummary";

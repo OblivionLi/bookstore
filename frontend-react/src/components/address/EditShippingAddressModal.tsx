@@ -1,8 +1,8 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import IUserAddresses from "../../types/IUserAddresses";
+import IUserAddresses from "../../types/user/IUserAddresses";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import UsersService from "../../services/UsersService";
-import {IUserShippingAddress} from "../../types/IUserShippingAddress";
+import {IUserShippingAddress} from "../../types/user/IUserShippingAddress";
 
 const EditShippingAddressModal: React.FC<IUserAddresses> = ({
                                                                                address,

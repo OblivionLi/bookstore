@@ -1,5 +1,6 @@
 package com.balaur.bookstore.backend.model.user;
 
+import com.balaur.bookstore.backend.model.order.Order;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

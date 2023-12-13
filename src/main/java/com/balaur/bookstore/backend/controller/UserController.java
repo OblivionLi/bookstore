@@ -1,5 +1,7 @@
 package com.balaur.bookstore.backend.controller;
 
+import com.balaur.bookstore.backend.dto.UserAddressDto;
+import com.balaur.bookstore.backend.model.user.UserAddress;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
 import com.balaur.bookstore.backend.request.user.*;
 import com.balaur.bookstore.backend.response.user.UserBillingAddressResponse;
@@ -29,6 +31,11 @@ public class UserController {
     @GetMapping("/shipping-address")
     public ResponseEntity<List<UserShippingAddressResponse>> getUserShippingAddress(Authentication authentication) {
         return userService.getUserShippingAddress(authentication);
+    }
+
+    @GetMapping("/default/{type}-address")
+    public ResponseEntity<UserAddressDto> getDefaultAddress(Authentication authentication, @PathVariable String type) {
+        return userService.getDefaultAddress(authentication, type);
     }
 
     @GetMapping("/billing-address")

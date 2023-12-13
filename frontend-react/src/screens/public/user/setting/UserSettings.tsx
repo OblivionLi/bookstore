@@ -4,7 +4,7 @@ import Breadcrumb from "../../../../components/breadcrumb/Breadcrumb";
 import {Link, Route, Routes, useNavigate} from "react-router-dom";
 import LocalStorageService from "../../../../services/LocalStorageService";
 import UserDetails from "./UserDetails";
-import IUserTokenDecodedData from "../../../../types/IUserTokenDecodedData";
+import IUserTokenDecodedData from "../../../../types/user/IUserTokenDecodedData";
 import UserShippingAddress from "./UserShippingAddress";
 import UserBillingAddress from "./UserBillingAddress";
 

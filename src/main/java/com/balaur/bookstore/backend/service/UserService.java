@@ -2,6 +2,7 @@ package com.balaur.bookstore.backend.service;
 
 import com.balaur.bookstore.backend.config.UserAuthenticationProvider;
 import com.balaur.bookstore.backend.dto.UserAddressDto;
+import com.balaur.bookstore.backend.dto.UserAddressMappingDto;
 import com.balaur.bookstore.backend.repository.user.UserShippingAddressRepository;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
 import com.balaur.bookstore.backend.exception.user.*;
@@ -19,7 +20,6 @@ import com.balaur.bookstore.backend.util.ValidateRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -145,7 +145,7 @@ public class UserService implements UserDetailsService {
                 }
 
                 UserBillingAddress userBillingAddress = new UserBillingAddress();
-                UserAddressDto.mapBillingAddressAttributes(userBillingAddress, request);
+                UserAddressMappingDto.mapBillingAddressAttributes(userBillingAddress, request);
                 userBillingAddress.setUser(user);
                 if (user.getUserBillingAddresses().isEmpty()) {
                     userBillingAddress.setDefault(true);
@@ -161,7 +161,7 @@ public class UserService implements UserDetailsService {
                 }
 
                 UserShippingAddress userShippingAddress = new UserShippingAddress();
-                UserAddressDto.mapShippingAddressAttributes(userShippingAddress, request);
+                UserAddressMappingDto.mapShippingAddressAttributes(userShippingAddress, request);
                 userShippingAddress.setUser(user);
                 if (user.getUserShippingAddresses().isEmpty()) {
                     userShippingAddress.setDefault(true);
@@ -196,7 +196,7 @@ public class UserService implements UserDetailsService {
 
                 UserBillingAddress userBillingAddress = billingAddress.get();
 
-                UserAddressDto.mapBillingAddressAttributes(userBillingAddress, request);
+                UserAddressMappingDto.mapBillingAddressAttributes(userBillingAddress, request);
                 userBillingAddress.setUser(user);
                 userBillingAddressRepository.save(userBillingAddress);
             }
@@ -209,7 +209,7 @@ public class UserService implements UserDetailsService {
                 }
 
                 UserShippingAddress userShippingAddress = shippingAddress.get();
-                UserAddressDto.mapShippingAddressAttributes(userShippingAddress, request);
+                UserAddressMappingDto.mapShippingAddressAttributes(userShippingAddress, request);
                 userShippingAddress.setUser(user);
                 userShippingAddressRepository.save(userShippingAddress);
             }
@@ -336,7 +336,6 @@ public class UserService implements UserDetailsService {
                             .country(shippingAddress.getCountry())
                             .city(shippingAddress.getCity())
                             .state(shippingAddress.getState())
-                            .deliveryNotes(shippingAddress.getDeliveryNotes())
                             .street(shippingAddress.getStreet())
                             .phoneNumber(shippingAddress.getPhoneNumber())
                             .isDefault(shippingAddress.isDefault())
@@ -442,5 +441,74 @@ public class UserService implements UserDetailsService {
 
         log.info("[UserService] " + new Date() + " | User address marked as default with success.");
         return "Address marked as default with success.";
+    }
+
+    public ResponseEntity<UserAddressDto> getDefaultAddress(Authentication authentication, String addressType) {
+        User user = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
+
+        if (user == null) {
+            log.warn("[UserService] " + new Date() + " | User: " + authentication.getName() +  " not found.");
+            throw new UsernameNotFoundException("User: " + authentication.getName() +  " not found.");
+        }
+
+        if (addressType.isEmpty()) {
+            log.warn("[UserService] " + new Date() + " | Can't delete user address because id/type is invalid.");
+            throw new RuntimeException("Can't find id/type.");
+        }
+
+        switch (addressType.toLowerCase()) {
+            case "shipping" -> {
+                UserShippingAddress userShippingAddress = user.getUserShippingAddresses().stream()
+                        .filter(UserShippingAddress::isDefault)
+                        .findFirst()
+                        .orElse(null);
+
+                if (userShippingAddress == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        UserAddressDto.builder()
+                                .id(userShippingAddress.getId())
+                                .isDefault(userShippingAddress.isDefault())
+                                .street(userShippingAddress.getStreet())
+                                .city(userShippingAddress.getCity())
+                                .state(userShippingAddress.getState())
+                                .country(userShippingAddress.getCountry())
+                                .phoneNumber(userShippingAddress.getPhoneNumber())
+                                .zipcode(userShippingAddress.getZipcode())
+                                .recipientName(userShippingAddress.getRecipientName())
+                                .build()
+                );
+            }
+            case "billing" -> {
+                UserBillingAddress userBillingAddress = user.getUserBillingAddresses().stream()
+                        .filter(UserBillingAddress::isDefault)
+                        .findFirst()
+                        .orElse(null);
+
+                if (userBillingAddress == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        UserAddressDto.builder()
+                                .id(userBillingAddress.getId())
+                                .isDefault(userBillingAddress.isDefault())
+                                .street(userBillingAddress.getStreet())
+                                .city(userBillingAddress.getCity())
+                                .state(userBillingAddress.getState())
+                                .country(userBillingAddress.getCountry())
+                                .phoneNumber(userBillingAddress.getPhoneNumber())
+                                .zipcode(userBillingAddress.getZipcode())
+                                .billingName(userBillingAddress.getBillingName())
+                                .build()
+                );
+            }
+            default -> {
+                log.warn("[UserService] " + new Date() + " | Can't delete user address because type is invalid.");
+                throw new RuntimeException("Can't delete user address because type is invalid.");
+            }
+        }
     }
 }

@@ -23,4 +23,17 @@ public class OrderLineItem {
     private double pricePerUnit;
     private double totalPrice;
     private int discount;
+
+    @Override
+    public String toString() {
+        return "OrderLineItem{" +
+                "id=" + id +
+                ", order=" + order +
+                ", book=" + book +
+                ", quantity=" + quantity +
+                ", pricePerUnit=" + pricePerUnit +
+                ", totalPrice=" + totalPrice +
+                ", discount=" + discount +
+                '}';
+    }
 }

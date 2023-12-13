@@ -23,26 +23,9 @@ public class UserShippingAddress implements UserAddress {
     private String phoneNumber;
     private String zipcode;
     private String recipientName;
-    private String deliveryNotes;
     private boolean isDefault;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @Override
-    public String toString() {
-        return
-            "id=" + id +
-            ", street='" + street + '\'' +
-            ", city='" + city + '\'' +
-            ", state='" + state + '\'' +
-            ", country='" + country + '\'' +
-            ", phoneNumber='" + phoneNumber + '\'' +
-            ", zipcode='" + zipcode + '\'' +
-            ", recipientName='" + recipientName + '\'' +
-            ", deliveryNotes='" + deliveryNotes + '\'' +
-            ", isDefault=" + isDefault
-        ;
-    }
 }

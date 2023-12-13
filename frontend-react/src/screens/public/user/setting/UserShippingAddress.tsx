@@ -1,8 +1,8 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import IUserTokenDecodedData from "../../../../types/IUserTokenDecodedData";
+import IUserTokenDecodedData from "../../../../types/user/IUserTokenDecodedData";
 import {useNavigate} from "react-router-dom";
 import LocalStorageService from "../../../../services/LocalStorageService";
-import {IUserShippingAddress} from "../../../../types/IUserShippingAddress";
+import {IUserShippingAddress} from "../../../../types/user/IUserShippingAddress";
 import BooksService from "../../../../services/BooksService";
 import UsersService from "../../../../services/UsersService";
 import EditShippingAddressModal from "../../../../components/address/EditShippingAddressModal";

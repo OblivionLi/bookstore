@@ -1,7 +1,7 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import IUserAddresses from "../../types/IUserAddresses";
+import IUserAddresses from "../../types/user/IUserAddresses";
 import UsersService from "../../services/UsersService";
-import {IUserBillingAddress} from "../../types/IUserBillingAddress";
+import {IUserBillingAddress} from "../../types/user/IUserBillingAddress";
 
 const EditBillingAddressModal: React.FC<IUserAddresses> = ({
                                                                address,

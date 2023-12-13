@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import IAddAddressModalProps from "../../types/IAddAddressModalProps";
+import IAddAddressModalProps from "../../types/user/IAddAddressModalProps";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import UsersService from "../../services/UsersService";
 

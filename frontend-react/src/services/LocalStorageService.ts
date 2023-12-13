@@ -1,6 +1,6 @@
 import * as jose from 'jose';
-import IUserTokenDecodedData from "../types/IUserTokenDecodedData";
-import IBooksData from "../types/IBooksData";
+import IUserTokenDecodedData from "../types/user/IUserTokenDecodedData";
+import IBooksData from "../types/book/IBooksData";
 
 const isUserLogged = () => {
     const token = localStorage.getItem("userInfo");
@@ -131,6 +131,10 @@ const removeItemFromCart = (id: number) => {
     return false;
 }
 
+const removeItemsFromCart = () => {
+    localStorage.removeItem("cart");
+}
+
 const LocalStorageService = {
     addUserTokenToLocalStorage,
     getUserPermissions,
@@ -143,7 +147,8 @@ const LocalStorageService = {
     getCartItemCount,
     isItemInCart,
     getAllCartItems,
-    removeItemFromCart
+    removeItemFromCart,
+    removeItemsFromCart
 }
 
 export default LocalStorageService;
