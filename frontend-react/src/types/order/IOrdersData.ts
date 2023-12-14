@@ -11,6 +11,7 @@ export default interface IOrdersData {
     subtotal: number;
     totalPrice: number;
     orderStatus: string;
+    paymentStatus: string;
     orderShippingAddress: OrderShippingAddress;
     orderBillingAddress: OrderBillingAddress;
     orderLineItems: OrderLineItem[];

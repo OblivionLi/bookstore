@@ -2,8 +2,8 @@ package com.balaur.bookstore.backend.model.payment;
 
 import com.balaur.bookstore.backend.model.order.Order;
 import com.balaur.bookstore.backend.model.user.User;
-import com.balaur.bookstore.backend.util.PaymentMethod;
-import com.balaur.bookstore.backend.util.PaymentStatus;
+import com.balaur.bookstore.backend.util.payment.PaymentMethod;
+import com.balaur.bookstore.backend.util.payment.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

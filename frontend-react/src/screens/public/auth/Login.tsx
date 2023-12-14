@@ -114,7 +114,9 @@ const Login = () => {
                         />
                     </div>
                     <div className="auth-actions">
-                        <Link to={"/register"}>Don't have an account yet? Register here..</Link>
+                        <Link to={"/forgot-password"}>Forgot password? Click here and reset it.</Link>
+                        <Link to={"/register"}>Don't have an account yet? Click here to register.
+                        </Link>
                         <button type="submit" className="btn btn-primary">Login</button>
                     </div>
                 </form>

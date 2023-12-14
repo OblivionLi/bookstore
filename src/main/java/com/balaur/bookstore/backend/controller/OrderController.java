@@ -27,4 +27,9 @@ public class OrderController {
     public ResponseEntity<List<OrderResponse>> getOrders(Authentication authentication) {
         return orderService.getOrders(authentication);
     }
+
+    @DeleteMapping("/orders")
+    public void deleteOrders() {
+        orderService.deleteOrders();
+    }
 }

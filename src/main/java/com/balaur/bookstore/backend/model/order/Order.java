@@ -1,7 +1,8 @@
 package com.balaur.bookstore.backend.model.order;
 
 import com.balaur.bookstore.backend.model.user.User;
-import com.balaur.bookstore.backend.util.OrderStatus;
+import com.balaur.bookstore.backend.util.order.OrderStatus;
+import com.balaur.bookstore.backend.util.payment.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,13 +33,15 @@ public class Order {
     private double shippingCost;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderLineItem> orderLineItems;
     private String notes;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_shipping_address_id")
     private OrderShippingAddress orderShippingAddress;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_billing_address_id")
     private OrderBillingAddress orderBillingAddress;
 }

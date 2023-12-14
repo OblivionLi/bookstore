@@ -1,4 +1,4 @@
-package com.balaur.bookstore.backend.util;
+package com.balaur.bookstore.backend.util.payment;
 
 import lombok.Getter;
 

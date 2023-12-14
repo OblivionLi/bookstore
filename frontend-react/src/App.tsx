@@ -9,6 +9,7 @@ import UserSettings from "./screens/public/user/setting/UserSettings";
 import CartScreen from "./screens/public/cart/CartScreen";
 import ShippingScreen from "./screens/public/cart/ShippingScreen";
 import OrderHistoryScreen from "./screens/public/user/history/OrderHistoryScreen";
+import ForgotPassword from "./screens/public/auth/ForgotPassword";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
             {/*  Auth routes  */}
             <Route path={"/register"} element={<Register/>} />
             <Route path={"/login"} element={<Login/>} />
+            <Route path={"/forgot-password"} element={<ForgotPassword/>} />
 
             {/* User settings */}
             <Route path={"/user-settings/*"} element={<UserSettings/>} />

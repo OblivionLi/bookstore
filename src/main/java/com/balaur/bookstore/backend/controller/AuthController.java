@@ -1,5 +1,6 @@
 package com.balaur.bookstore.backend.controller;
 
+import com.balaur.bookstore.backend.request.user.UserForgotPassword;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
 import com.balaur.bookstore.backend.request.user.UserLoginRequest;
 import com.balaur.bookstore.backend.request.user.UserRegisterRequest;
@@ -26,5 +27,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserDetailsResponse> login(@RequestBody @Valid UserLoginRequest request) {
         return userService.login(request);
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestBody @Valid UserForgotPassword request) {
+        return userService.forgotPassword(request);
     }
 }

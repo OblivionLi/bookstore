@@ -103,6 +103,10 @@ const getDefaultBillingAddress = () => {
     });
 }
 
+const forgotPassword = (email: string) => {
+    return axios.post(`/api/auth/forgot-password`, {email});
+}
+
 const UsersService = {
     registerUser,
     loginUser,
@@ -114,7 +118,8 @@ const UsersService = {
     updateAddress,
     saveAddress,
     getDefaultShippingAddress,
-    getDefaultBillingAddress
+    getDefaultBillingAddress,
+    forgotPassword
 };
 
 export default UsersService;

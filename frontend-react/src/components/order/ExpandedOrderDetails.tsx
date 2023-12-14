@@ -43,11 +43,11 @@ const ExpandedOrderDetails: React.FC<ExpanderComponentProps<DataRow>> = ({data})
                     {data?.orderLineItems && data?.orderLineItems.map((orderLineItem: OrderLineItem, index: number) => (
                         <tr key={index}>
                             <td>{orderLineItem?.bookTitle}</td>
-                            <td>Type: {orderLineItem?.bookType}</td>
-                            <td>Quantity: {orderLineItem?.quantity}</td>
-                            <td>Discount: {orderLineItem?.discount}</td>
-                            <td>Price per Unit: {orderLineItem?.pricePerUnit}</td>
-                            <td>Total Price: {orderLineItem?.totalPrice.toFixed(2)}</td>
+                            <td>{orderLineItem?.bookType}</td>
+                            <td>{orderLineItem?.quantity}</td>
+                            <td>{orderLineItem?.discount}</td>
+                            <td>{orderLineItem?.pricePerUnit}</td>
+                            <td>{orderLineItem?.totalPrice.toFixed(2)} &euro;</td>
                         </tr>
                     ))}
                     </tbody>

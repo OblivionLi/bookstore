@@ -17,8 +17,9 @@ import com.balaur.bookstore.backend.response.order.OrderLineItemResponse;
 import com.balaur.bookstore.backend.response.order.OrderResponse;
 import com.balaur.bookstore.backend.response.order.PlaceOrderResponse;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
-import com.balaur.bookstore.backend.util.OrderStatus;
+import com.balaur.bookstore.backend.util.order.OrderStatus;
 import com.balaur.bookstore.backend.util.order.OrderServiceUtil;
+import com.balaur.bookstore.backend.util.payment.PaymentStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +81,7 @@ public class OrderService {
         newOrder.setTotalPrice(orderTotal);
 
         newOrder.setStatus(OrderStatus.NEW);
+        newOrder.setPaymentStatus(PaymentStatus.PENDING);
         newOrder.setOrderLineItems(orderLineItems);
         newOrder.setNotes(request.getDeliveryNotes());
 
@@ -224,6 +226,7 @@ public class OrderService {
                 .shippingCost(order.getShippingCost())
                 .taxAmount(order.getTaxAmount())
                 .orderStatus(order.getStatus().getDisplayName())
+                .paymentStatus(order.getPaymentStatus().getPaymentStatus())
                 .subtotal(order.getSubtotal())
                 .totalPrice(order.getTotalPrice())
                 .orderShippingAddress(order.getOrderShippingAddress())
@@ -237,5 +240,10 @@ public class OrderService {
             return "physical";
         }
         return "virtual";
+    }
+
+
+    public void deleteOrders() {
+        orderRepository.deleteAll();
     }
 }

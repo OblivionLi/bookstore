@@ -9,6 +9,7 @@ export default interface DataRow {
     shippingCost: number;
     totalPrice: string;
     orderStatus: string;
+    paymentStatus: string;
     notes: string;
     orderShippingAddress: OrderShippingAddress;
     orderBillingAddress: OrderBillingAddress;

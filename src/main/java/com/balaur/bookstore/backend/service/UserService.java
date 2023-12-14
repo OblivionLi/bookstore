@@ -3,13 +3,12 @@ package com.balaur.bookstore.backend.service;
 import com.balaur.bookstore.backend.config.UserAuthenticationProvider;
 import com.balaur.bookstore.backend.dto.UserAddressDto;
 import com.balaur.bookstore.backend.dto.UserAddressMappingDto;
-import com.balaur.bookstore.backend.repository.user.UserShippingAddressRepository;
+import com.balaur.bookstore.backend.model.email.EmailDetails;
+import com.balaur.bookstore.backend.model.email.EmailServiceImpl;
+import com.balaur.bookstore.backend.repository.user.*;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
 import com.balaur.bookstore.backend.exception.user.*;
 import com.balaur.bookstore.backend.model.user.*;
-import com.balaur.bookstore.backend.repository.user.UserBillingAddressRepository;
-import com.balaur.bookstore.backend.repository.user.UserGroupRepository;
-import com.balaur.bookstore.backend.repository.user.UserRepository;
 import com.balaur.bookstore.backend.request.user.*;
 import com.balaur.bookstore.backend.response.user.UserBillingAddressResponse;
 import com.balaur.bookstore.backend.response.user.UserShippingAddressResponse;
@@ -31,18 +30,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService implements UserDetailsService {
+    private final PasswordResetRepository passwordResetRepository;
     private final UserShippingAddressRepository userShippingAddressRepository;
     private final UserBillingAddressRepository userBillingAddressRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserGroupRepository userGroupRepository;
     private final UserAuthenticationProvider userAuthenticationProvider;
+    private final EmailServiceImpl emailService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -510,5 +513,26 @@ public class UserService implements UserDetailsService {
                 throw new RuntimeException("Can't delete user address because type is invalid.");
             }
         }
+    }
+
+    public String forgotPassword(UserForgotPassword request) {
+        User user = userRepository.findByEmail(request.getEmail());
+        if (user == null) {
+            log.info("[UserService] " + new Date() + " | Can't send password request to unregistered email.");
+            return "Can't find user with this email: " + request.getEmail();
+        }
+
+        String resetToken = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 60);
+        PasswordReset passwordReset = new PasswordReset();
+        passwordReset.setToken(resetToken);
+        passwordReset.setRequestedAt(LocalDateTime.from(LocalDate.now()));
+        passwordResetRepository.save(passwordReset);
+
+        EmailDetails emailDetails = new EmailDetails();
+        emailDetails.setSubject("Bookstore - Password Reset");
+        emailDetails.setRecipient(request.getEmail());
+        emailDetails.setMessage("You requested a password reset. If you didn't ignore this message.");
+
+        return emailService.sendSimpleMail(emailDetails);
     }
 }

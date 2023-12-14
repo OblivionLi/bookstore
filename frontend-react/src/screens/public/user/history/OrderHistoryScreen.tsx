@@ -19,8 +19,13 @@ const columns: TableColumn<DataRow>[] = [
         sortable: true,
     },
     {
-        name: 'Status',
+        name: 'Order Status',
         selector: row => row.orderStatus,
+        sortable: true,
+    },
+    {
+        name: 'Payment Status',
+        selector: row => row.paymentStatus,
         sortable: true,
     },
     {
@@ -38,7 +43,25 @@ const columns: TableColumn<DataRow>[] = [
         selector: row => row.totalPrice,
         sortable: true,
     },
+    {
+        name: 'Options',
+        cell: (row: DataRow) => (
+            <button
+                type="button"
+                className={`btn ${row.paymentStatus === 'Successful' || row.paymentStatus === 'Refunded' || row.paymentStatus === 'Canceled' ? 'btn-secondary' : 'btn-success'}`}
+                onClick={() => handleOptionsClick(row)}
+                disabled={row.paymentStatus === 'Successful' || row.paymentStatus === 'Refunded' || row.paymentStatus === 'Canceled'}
+            >
+                {row.paymentStatus === 'Successful' || row.paymentStatus === 'Refunded' || row.paymentStatus === 'Canceled' ? 'Paid' : 'Pay'}
+            </button>
+        ),
+        button: true,
+    }
 ];
+
+const handleOptionsClick = (row: DataRow) => {
+
+}
 
 const OrderHistoryScreen = () => {
     const [orders, setOrders] = useState<IOrdersData[]>([]);
@@ -68,7 +91,8 @@ const OrderHistoryScreen = () => {
             notes: order.notes,
             orderShippingAddress: order.orderShippingAddress,
             orderBillingAddress: order.orderBillingAddress,
-            orderLineItems: order.orderLineItems
+            orderLineItems: order.orderLineItems,
+            paymentStatus: order.paymentStatus
         }));
     };
 
@@ -81,7 +105,7 @@ const OrderHistoryScreen = () => {
             <hr/>
 
             <div className="container">
-                {orders.length == 0 ? (<p>You have no orders placed.</p>) : (
+                {orders.length === 0 ? (<p>You have no orders placed.</p>) : (
                     <DataTable
                         title="Order History"
                         columns={columns}

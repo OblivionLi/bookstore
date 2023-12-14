@@ -18,6 +18,7 @@ public class OrderResponse {
     private double shippingCost;
     private double taxAmount;
     private String orderStatus;
+    private String paymentStatus;
     private double subtotal;
     private double totalPrice;
     private OrderShippingAddress orderShippingAddress;
