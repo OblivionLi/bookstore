@@ -28,6 +28,11 @@ public class OrderController {
         return orderService.getOrders(authentication);
     }
 
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<OrderResponse> getOrders(Authentication authentication, @PathVariable Long id) {
+        return orderService.getOrder(authentication, id);
+    }
+
     @DeleteMapping("/orders")
     public void deleteOrders() {
         orderService.deleteOrders();

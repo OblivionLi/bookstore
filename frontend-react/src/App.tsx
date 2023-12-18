@@ -10,6 +10,8 @@ import CartScreen from "./screens/public/cart/CartScreen";
 import ShippingScreen from "./screens/public/cart/ShippingScreen";
 import OrderHistoryScreen from "./screens/public/user/history/OrderHistoryScreen";
 import ForgotPassword from "./screens/public/auth/ForgotPassword";
+import ResetPassword from "./screens/public/auth/ResetPassword";
+import ShowOrderScreen from "./screens/public/user/history/ShowOrderScreen";
 
 function App() {
     return (
@@ -22,6 +24,7 @@ function App() {
             <Route path={"/register"} element={<Register/>} />
             <Route path={"/login"} element={<Login/>} />
             <Route path={"/forgot-password"} element={<ForgotPassword/>} />
+            <Route path={"/reset-password"} element={<ResetPassword/>} />
 
             {/* User settings */}
             <Route path={"/user-settings/*"} element={<UserSettings/>} />
@@ -29,6 +32,9 @@ function App() {
             {/*  Cart  */}
             <Route path={"/cart"} element={<CartScreen/>}/>
             <Route path={"/cart/shipping"} element={<ShippingScreen/>}/>
+
+            {/* Show order */}
+            <Route path={"/order/:id"} element={<ShowOrderScreen/>}/>
 
             {/*  User orders  */}
             <Route path={"/user-history"} element={<OrderHistoryScreen/>} />

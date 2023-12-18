@@ -20,9 +20,19 @@ const getOrders = () => {
     });
 }
 
+const getOrder = (id: number) => {
+    return axios.get(`/api/orders/${id}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
 const OrdersService = {
     placeOrder,
-    getOrders
+    getOrders,
+    getOrder
 };
 
 export default OrdersService;

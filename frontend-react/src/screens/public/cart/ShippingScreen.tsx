@@ -15,7 +15,7 @@ import IPlaceOrderRequest from "../../../types/order/IPlaceOrderRequest";
 import OrdersService from "../../../services/OrdersService";
 import {Button, Modal} from "react-bootstrap";
 import IPlaceOrderResponse from "../../../types/order/IPlaceOrderResponse";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const ShippingScreen = () => {
     const navigate = useNavigate();
@@ -134,6 +134,7 @@ const ShippingScreen = () => {
                 setModalContent(response.data as IPlaceOrderResponse);
                 handleShowModal();
                 LocalStorageService.removeItemsFromCart();
+                navigate(`/order/${response.data?.orderId}`)
             })
             .catch((e: Error) => {
                 console.log(e);
@@ -245,37 +246,37 @@ const ShippingScreen = () => {
                         <hr/>
                         <CartSummary/>
                         <button className="btn btn-primary" onClick={() => placeOrder()}>
-                            {/*<Link to={'/cart/placeorder'}>Place Order</Link>*/}
+                            Place Order
                         </button>
                     </div>
                 </div>
             </div>
 
-            <Modal show={showModal} onHide={handleCloseModalSuccess}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Order Placed with Success</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {modalContent && (
-                        <div>
-                            <h4>Your physical items will be delivered at:</h4>
-                            <p>{modalContent.country}, {modalContent.city}, {modalContent.street}, {modalContent.zipcode}</p>
-                            <hr/>
-                            <h4>For recipient:</h4>
-                            <p>{modalContent.recipientName}, {modalContent.phoneNumber}</p>
-                            <hr/>
-                            <p>Taxes: {modalContent.shippingCost} &euro; (shipping cost) + {modalContent.taxAmount} &euro; (tax)</p>
-                            <hr/>
-                            <p>Total: {modalContent.orderTotal.toFixed(2)} &euro;</p>
-                        </div>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModalSuccess}>
-                        Confirm
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            {/*<Modal show={showModal} onHide={handleCloseModalSuccess}>*/}
+            {/*    <Modal.Header closeButton>*/}
+            {/*        <Modal.Title>Order Placed with Success</Modal.Title>*/}
+            {/*    </Modal.Header>*/}
+            {/*    <Modal.Body>*/}
+            {/*        {modalContent && (*/}
+            {/*            <div>*/}
+            {/*                <h4>Your physical items will be delivered at:</h4>*/}
+            {/*                <p>{modalContent.country}, {modalContent.city}, {modalContent.street}, {modalContent.zipcode}</p>*/}
+            {/*                <hr/>*/}
+            {/*                <h4>For recipient:</h4>*/}
+            {/*                <p>{modalContent.recipientName}, {modalContent.phoneNumber}</p>*/}
+            {/*                <hr/>*/}
+            {/*                <p>Taxes: {modalContent.shippingCost} &euro; (shipping cost) + {modalContent.taxAmount} &euro; (tax)</p>*/}
+            {/*                <hr/>*/}
+            {/*                <p>Total: {modalContent.orderTotal.toFixed(2)} &euro;</p>*/}
+            {/*            </div>*/}
+            {/*        )}*/}
+            {/*    </Modal.Body>*/}
+            {/*    <Modal.Footer>*/}
+            {/*        <Button variant="secondary" onClick={handleCloseModalSuccess}>*/}
+            {/*            Confirm*/}
+            {/*        </Button>*/}
+            {/*    </Modal.Footer>*/}
+            {/*</Modal>*/}
         </>
     );
 };

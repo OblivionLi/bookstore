@@ -18,6 +18,7 @@ public class PasswordReset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String email;
     private String token;
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime requestedAt;

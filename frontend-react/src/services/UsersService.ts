@@ -107,6 +107,15 @@ const forgotPassword = (email: string) => {
     return axios.post(`/api/auth/forgot-password`, {email});
 }
 
+const isResetPasswordTokenValid = (token: string) => {
+    return axios.get(`/api/auth/reset-password/` + token);
+}
+
+const resetUserPassword = (formData: object) => {
+    return axios.patch(`/api/auth/reset-password`, formData);
+}
+
+
 const UsersService = {
     registerUser,
     loginUser,
@@ -119,7 +128,9 @@ const UsersService = {
     saveAddress,
     getDefaultShippingAddress,
     getDefaultBillingAddress,
-    forgotPassword
+    forgotPassword,
+    isResetPasswordTokenValid,
+    resetUserPassword
 };
 
 export default UsersService;

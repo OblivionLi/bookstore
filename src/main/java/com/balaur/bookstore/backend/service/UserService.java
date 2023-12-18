@@ -30,7 +30,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -522,17 +521,62 @@ public class UserService implements UserDetailsService {
             return "Can't find user with this email: " + request.getEmail();
         }
 
-        String resetToken = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 60);
+        String resetToken = UUID.randomUUID().toString().replace("-", "").substring(0, 32);
         PasswordReset passwordReset = new PasswordReset();
         passwordReset.setToken(resetToken);
-        passwordReset.setRequestedAt(LocalDateTime.from(LocalDate.now()));
+        passwordReset.setRequestedAt(LocalDateTime.now());
+        passwordReset.setEmail(user.getEmail());
         passwordResetRepository.save(passwordReset);
 
         EmailDetails emailDetails = new EmailDetails();
         emailDetails.setSubject("Bookstore - Password Reset");
         emailDetails.setRecipient(request.getEmail());
-        emailDetails.setMessage("You requested a password reset. If you didn't ignore this message.");
 
-        return emailService.sendSimpleMail(emailDetails);
+        String mailContent = emailDetails.generateResetPasswordMail(resetToken);
+        emailDetails.setMessage(mailContent);
+
+        return emailService.sendHtmlMail(emailDetails);
+    }
+
+    public boolean isResetPasswordTokenValid(String token) {
+        PasswordReset passwordReset = passwordResetRepository.findByToken(token);
+        if (passwordReset == null) {
+            log.info("[UserService] " + new Date() + " | Can't find token for resetting user password.");
+            return false;
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public ResponseEntity<UserDetailsResponse> resetPassword(UserResetPasswordRequest request) {
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            log.warn("[UserService] " + new Date() + " | New Password and confirm password did not match.");
+            throw new PasswordDidNotMatchException("New Password and confirm password did not match.");
+        }
+
+        PasswordReset passwordReset = passwordResetRepository.findByToken(request.getToken());
+        if (passwordReset == null) {
+            log.info("[UserService] " + new Date() + " | Can't find token for resetting user password.");
+            throw new RuntimeException("Can't find token for resetting user password.");
+        }
+
+        String encryptedPassword = passwordEncoder.encode(request.getPassword());
+
+        User foundUser = userRepository.findByEmail(passwordReset.getEmail());
+        foundUser.setPassword(encryptedPassword);
+        foundUser = userRepository.save(foundUser);
+
+        UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder()
+                .id(foundUser.getId())
+                .firstName(foundUser.getFirstName())
+                .lastName(foundUser.getLastName())
+                .email(foundUser.getEmail())
+                .userGroupCodes(UserServiceUtil.getUserGroupCodes(foundUser))
+                .build();
+
+        userDetailsResponse.setToken(userAuthenticationProvider.createToken(userDetailsResponse));
+
+        return ResponseEntity.status(HttpStatus.OK).body(userDetailsResponse);
     }
 }

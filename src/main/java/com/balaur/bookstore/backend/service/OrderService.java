@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -245,5 +246,23 @@ public class OrderService {
 
     public void deleteOrders() {
         orderRepository.deleteAll();
+    }
+
+    public ResponseEntity<OrderResponse> getOrder(Authentication authentication, Long id) {
+        User user = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
+
+        if (user == null) {
+            log.warn("[UserService] " + new Date() + " | User: " + authentication.getName() + " not found.");
+            throw new UsernameNotFoundException("User: " + authentication.getName() + " not found.");
+        }
+
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isEmpty()) {
+            log.warn("[UserService] " + new Date() + " | Couldn't find order.");
+            return null;
+        }
+
+        OrderResponse orderResponse = getMappedOrderResponse(order.get());
+        return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
     }
 }
