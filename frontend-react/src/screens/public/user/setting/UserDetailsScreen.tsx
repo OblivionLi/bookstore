@@ -3,8 +3,11 @@ import UsersService from "../../../../services/UsersService";
 import LocalStorageService from "../../../../services/LocalStorageService";
 import {useNavigate} from "react-router-dom";
 import IUserTokenDecodedData from "../../../../types/user/IUserTokenDecodedData";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import {Button, TextField} from "@mui/material";
 
-const UserDetails = ({ userData }: { userData: IUserTokenDecodedData }) => {
+const UserDetailsScreen = ({ userData }: { userData: IUserTokenDecodedData }) => {
     const navigate = useNavigate();
     const [userRoles, setUserRoles] = useState("");
 
@@ -85,68 +88,63 @@ const UserDetails = ({ userData }: { userData: IUserTokenDecodedData }) => {
     return (
         <div className="user-settings-forms">
             <div>
-                <h2>My roles: <i>{userRoles}</i></h2>
+                <Typography variant="h5">My roles: <i>{userRoles}</i></Typography>
             </div>
-            <hr/>
+            <Box sx={{borderBottom: 1, borderColor: 'divider', pb: 1, mb: 2}}/>
 
             <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label htmlFor="firstName" className="form-label">Change First Name</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="firstName"
-                        placeholder="Enter your new first name.."
-                        required={true}
-                        value={formData.firstName}
-                        onChange={handleChange}
-                    />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="Change First Name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    error={Boolean(validationMessages.firstName)}
+                    helperText={validationMessages.firstName}
+                />
 
-                    <div className="">{validationMessages.firstName}</div>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="lastName" className="form-label">Change Last Name</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="lastName"
-                        placeholder="Enter your new last name.."
-                        required={true}
-                        value={formData.lastName}
-                        onChange={handleChange}
-                    />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="lastName"
+                    label="Change Last Name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    error={Boolean(validationMessages.lastName)}
+                    helperText={validationMessages.lastName}
+                />
 
-                    <div className="">{validationMessages.lastName}</div>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Change email address</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter your new email.."
-                        required={true}
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                    <div className="">{validationMessages.email}</div>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Change Password</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        id="password"
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="auth-actions">
-                    <button type="submit" className="btn btn-primary">Update</button>
-                </div>
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Change Email Address"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={Boolean(validationMessages.email)}
+                    helperText={validationMessages.email}
+                />
+
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    id="password"
+                    label="Change Password"
+                    type="password"
+                    onChange={handleChange}
+                />
+
+                <Button type="submit" fullWidth variant="contained" color="primary" style={{marginTop: '1rem'}}>
+                    Update
+                </Button>
             </form>
         </div>
     );
 };
 
-export default UserDetails;
+export default UserDetailsScreen;

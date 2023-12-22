@@ -1,11 +1,12 @@
 import React from 'react';
 import MainNavbar from "../../../components/MainNavbar";
-import Breadcrumb from "../../../components/breadcrumb/Breadcrumb";
 import LocalStorageService from "../../../services/LocalStorageService";
 import IBooksData from "../../../types/book/IBooksData";
 import {Link, useNavigate} from "react-router-dom";
 import BooksService from "../../../services/BooksService";
 import CartSummary from "../../../components/cart/CartSummary";
+import BreadcrumbMulti from "../../../components/breadcrumb/BreadcrumbMulti";
+import {Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 
 const CartScreen = () => {
     const navigate = useNavigate();
@@ -22,53 +23,57 @@ const CartScreen = () => {
     return (
         <>
             <MainNavbar/>
-            <Breadcrumb page={"Cart"}/>
-            <hr/>
-            <div className="container-fluid">
+            <BreadcrumbMulti items={["Cart"]}/>
+
+            <Paper elevation={3}
+                   sx={{padding: 3, marginTop: 3, width: '85%', marginLeft: 'auto', marginRight: 'auto'}}>
                 {cartItemsCount > 0 ? (
-                    <div className="row">
-                        <div className="col">
-                            <table className="table">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Title</th>
-                                    <th scope="col">Discount</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Quantity</th>
-                                    <th scope="col">Options</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {cartItems && cartItems.map((cartItem: IBooksData, index: number) => (
-                                    <tr key={index}>
-                                        <td>{cartItem?.title}</td>
-                                        <td>{cartItem?.discount} %</td>
-                                        <td>
-                                            <del>{cartItem?.price} &euro;</del>
-                                            | {BooksService.calculateBookPrice(cartItem?.price, cartItem?.discount).toFixed(2)} &euro;
-                                        </td>
-                                        <td>{cartItem.quantity ? cartItem.quantity : "Virtual"}</td>
-                                        <td>
-                                            <button className="btn btn-danger"
-                                                    onClick={() => removeItemFromCart(cartItem?.id)}>Remove
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="col">
-                            <CartSummary />
-                            <button className="btn btn-primary">
-                                <Link to={'/cart/shipping'}>Proceed to checkout</Link>
-                            </button>
-                        </div>
-                    </div>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={8}>
+                            <TableContainer component={Paper}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Title</TableCell>
+                                            <TableCell>Discount</TableCell>
+                                            <TableCell>Price</TableCell>
+                                            <TableCell>Quantity</TableCell>
+                                            <TableCell className="text-right">Options</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {cartItems && cartItems.map((cartItem: IBooksData, index: number) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{cartItem?.title}</TableCell>
+                                                <TableCell>{cartItem?.discount} %</TableCell>
+                                                <TableCell>
+                                                    <del>{cartItem?.price} &euro;</del>
+                                                    | {BooksService.calculateBookPrice(cartItem?.price, cartItem?.discount).toFixed(2)} &euro;
+                                                </TableCell>
+                                                <TableCell
+                                                    className="text-right">{cartItem.quantity ? cartItem.quantity : "Virtual"}</TableCell>
+                                                <TableCell align="right">
+                                                    <Button variant="contained" color="secondary"
+                                                            onClick={() => removeItemFromCart(cartItem?.id)}>Remove</Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <CartSummary/>
+                            <Button variant="contained" color="primary" style={{marginTop: '8px'}}>
+                                <Link to={'/cart/shipping'} style={{textDecoration: 'none', color: 'inherit'}}>Proceed
+                                    to checkout</Link>
+                            </Button>
+                        </Grid>
+                    </Grid>
                 ) : (
                     <p>Cart is empty. Please add at least 1 item to check your cart list.</p>
                 )}
-            </div>
+            </Paper>
         </>
     );
 };

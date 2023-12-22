@@ -1,12 +1,15 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import MainNavbar from "../../../components/MainNavbar";
 import Breadcrumb from "../../../components/breadcrumb/Breadcrumb";
 import {Link, redirect} from "react-router-dom";
 import UsersService from "../../../services/UsersService";
 import LocalStorageService from "../../../services/LocalStorageService";
+import BreadcrumbMulti from "../../../components/breadcrumb/BreadcrumbMulti";
+import {Button, Paper, TextField} from "@mui/material";
+import Typography from "@mui/material/Typography";
 
-const Login = () => {
+const LoginScreen = () => {
     const navigate = useNavigate();
 
     const checkTokenAndRedirect = () => {
@@ -83,46 +86,47 @@ const Login = () => {
     return (
         <>
             <MainNavbar/>
-            <Breadcrumb page={"Login"} />
-            <hr/>
-            <div className="container">
+            <BreadcrumbMulti items={["Login"]}/>
+            <Paper elevation={3}
+                   sx={{padding: 3, marginTop: 3, width: '85%', marginLeft: 'auto', marginRight: 'auto'}}>
                 {usernameNotFound && <div className="alert alert-danger" role="alert">{usernameNotFound}</div>}
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email address</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            aria-describedby="emailHelp"
-                            placeholder="Enter your email.."
-                            required={true}
-                            value={formData.email}
-                            onChange={handleChange}
-                        />
-                        <div className="">{validationMessages.email}</div>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="password" className="form-label">Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="password"
-                            required={true}
-                            value={formData.password}
-                            onChange={handleChange}
-                        />
-                    </div>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        error={Boolean(validationMessages.email)}
+                        helperText={validationMessages.email}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="password"
+                        label="Password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        helperText={validationMessages.password}
+                    />
                     <div className="auth-actions">
-                        <Link to={"/forgot-password"}>Forgot password? Click here and reset it.</Link>
-                        <Link to={"/register"}>Don't have an account yet? Click here to register.
+                        <Link to={"/forgot-password"} style={{textDecoration: "none"}}>Forgot password? Click here and
+                            reset it.</Link>
+                        <Link to={"/register"} style={{textDecoration: "none"}}>Don't have an account yet? Click here to
+                            register.
                         </Link>
-                        <button type="submit" className="btn btn-primary">Login</button>
+                        <Button type="submit" fullWidth variant="contained" color="primary" style={{marginTop: '1rem'}}>
+                            Login
+                        </Button>
                     </div>
                 </form>
-            </div>
+            </Paper>
         </>
     );
 };
 
-export default Login;
+export default LoginScreen;

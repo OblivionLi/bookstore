@@ -1,30 +1,32 @@
 import React from 'react';
 import IBreadcrumbProps from "../../types/IBreadcrumbProps";
 import {Link} from "react-router-dom";
+import {Breadcrumbs, Divider} from "@mui/material";
+import Typography from "@mui/material/Typography";
 
-
-
-const BreadcrumbMulti: React.FC<IBreadcrumbProps> = ({ items }) => {
-    if (items.length < 2) {
-        console.error("Breadcrumb requires at least two items.");
-        return null;
-    }
-
+const BreadcrumbMulti: React.FC<IBreadcrumbProps> = ({items}) => {
     return (
-        <nav className="breadcrumb-nav" aria-label="breadcrumb">
-            <ol className="breadcrumb">
-                <li className="breadcrumb-item"><Link to="/">Home</Link></li>
+        <>
+            <Breadcrumbs separator="›" aria-label="breadcrumb" sx={{mt: 3, ml: 25}}>
+                <Link to="/" style={{textDecoration: "none"}}>
+                    Home
+                </Link>
+
                 {items.map((item, index) => (
-                    <li key={index} className={`breadcrumb-item ${index === items.length - 1 ? 'active' : ''}`} aria-current={index === items.length - 1 ? 'page' : undefined}>
+                    <div key={index} className={index === items.length - 1 ? 'active' : ''}>
                         {index === items.length - 1 ? (
-                            <>{item}</>
+                            <Typography color="text.primary">
+                                {item}
+                            </Typography>
                         ) : (
-                            <Link to={`/${item.toLowerCase()}`}>{item}</Link>
+                            <Link color="inherit" to={`/${item.toLowerCase()}`}>
+                                {item}
+                            </Link>
                         )}
-                    </li>
+                    </div>
                 ))}
-            </ol>
-        </nav>
+            </Breadcrumbs>
+        </>
     );
 };
 

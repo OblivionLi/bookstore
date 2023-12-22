@@ -278,7 +278,7 @@ public class BookService {
                 .id(bookRating.getId())
                 .rating(bookRating.getRating())
                 .review(bookRating.getReview())
-                .username(bookRating.getUser().getFirstName() + " " + bookRating.getUser().getLastName())
+                .username(bookRating.getUser().getEmail())
                 .createdAt(bookRating.getCreatedAt())
                 .build();
     }

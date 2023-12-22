@@ -3,11 +3,27 @@ import IUserAddresses from "../../types/user/IUserAddresses";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import UsersService from "../../services/UsersService";
 import {IUserShippingAddress} from "../../types/user/IUserShippingAddress";
+import {Button, Modal, TextField} from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+};
 
 const EditShippingAddressModal: React.FC<IUserAddresses> = ({
-                                                                               address,
-                                                                               onSave,
-                                                                               onClose,}) => {
+                                                                openEdit,
+                                                                address,
+                                                                onSave,
+                                                                onClose,
+                                                            }) => {
 
     const shippingAddress = address as IUserShippingAddress;
 
@@ -57,105 +73,79 @@ const EditShippingAddressModal: React.FC<IUserAddresses> = ({
     }
 
     return (
-        <div className="modal fade" id="editShippingAddressModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="exampleModalLabel">Edit Shipping Address</h1>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={onClose}></button>
-                    </div>
-                    <div className="modal-body">
-                        <div className="mb-3">
-                            <label htmlFor="street" className="form-label">Change Street</label>
-                            <input
-                                type="text"
-                                className="form-control"
+        <div>
+            <Modal
+                open={openEdit}
+                onClose={onClose}
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Edit Shipping Address
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{mt: 2}}>
+                        <form noValidate autoComplete="off">
+                            <TextField
                                 id="street"
-                                placeholder="Enter your new street.."
-                                required={true}
+                                label="Change Street"
+                                variant="standard"
+                                onChange={handleChange}
+                                fullWidth
                                 defaultValue={shippingAddress?.street || ''}
-                                onChange={handleChange}
                             />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="city" className="form-label">Change City</label>
-                            <input
-                                type="text"
-                                className="form-control"
+                            <TextField
                                 id="city"
-                                placeholder="Enter your new city.."
-                                required={true}
+                                label="Change City"
+                                variant="standard"
+                                onChange={handleChange}
+                                fullWidth
                                 defaultValue={shippingAddress?.city || ''}
-                                onChange={handleChange}
                             />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="country" className="form-label">Change Country</label>
-                            <input
-                                type="text"
-                                className="form-control"
+                            <TextField
                                 id="country"
-                                placeholder="Enter your new country.."
-                                required={true}
+                                label="Change Country"
+                                variant="standard"
+                                onChange={handleChange}
+                                fullWidth
                                 defaultValue={shippingAddress?.country || ''}
-                                onChange={handleChange}
                             />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="state" className="form-label">Change State</label>
-                            <input
-                                type="text"
-                                className="form-control"
+                            <TextField
                                 id="state"
-                                placeholder="Enter your new state.."
-                                required={true}
+                                label="Change State"
+                                variant="standard"
+                                onChange={handleChange}
+                                fullWidth
                                 defaultValue={shippingAddress?.state || ''}
-                                onChange={handleChange}
                             />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="phoneNumber" className="form-label">Change Phone Number</label>
-                            <input
-                                type="text"
-                                className="form-control"
+                            <TextField
                                 id="phoneNumber"
-                                placeholder="Enter your new phone number.."
-                                required={true}
+                                label="Change Phone Number"
+                                variant="standard"
+                                onChange={handleChange}
+                                fullWidth
                                 defaultValue={shippingAddress?.phoneNumber || ''}
-                                onChange={handleChange}
                             />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="zipCode" className="form-label">Change ZipCode</label>
-                            <input
-                                type="text"
-                                className="form-control"
+                            <TextField
                                 id="zipCode"
-                                placeholder="Enter your new zip code.."
-                                required={true}
+                                label="Change Zipcode"
+                                variant="standard"
+                                onChange={handleChange}
+                                fullWidth
                                 defaultValue={shippingAddress?.zipcode || ''}
-                                onChange={handleChange}
                             />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="recipientName" className="form-label">Change Recipient Name</label>
-                            <input
-                                type="text"
-                                className="form-control"
+                            <TextField
                                 id="recipientName"
-                                placeholder="Enter your new recipient name.."
-                                required={true}
-                                defaultValue={shippingAddress?.recipientName || ''}
+                                label="Change Recipient Name"
+                                variant="standard"
                                 onChange={handleChange}
+                                fullWidth
+                                defaultValue={shippingAddress?.recipientName || ''}
                             />
-                        </div>
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={onClose}>Close</button>
-                        <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSave}>Save changes</button>
-                    </div>
-                </div>
-            </div>
+                            <Button onClick={handleSave} variant="contained" color="primary" fullWidth
+                                    style={{marginTop: '1rem'}}>Edit address</Button>
+                        </form>
+                    </Typography>
+                </Box>
+            </Modal>
         </div>
     );
 };

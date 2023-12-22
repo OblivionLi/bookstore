@@ -1,6 +1,7 @@
 import axios from "axios";
 import IBooksData from "../types/book/IBooksData";
 import IBookReviews from "../types/book/IBookReviews";
+import LocalStorageService from "./LocalStorageService";
 
 const getAllBooks = (page: number) => {
     return axios.get<Array<IBooksData>>(`/api/book?page=${page}`);
@@ -23,11 +24,21 @@ const calculateBookPrice = (price: number, discount: number): number => {
     return price - discountAmount;
 }
 
+const addBookReview = (bookId: number, reviewText: string, rating: number) => {
+    return axios.post(`/api/book/${bookId}/rating`, {review: reviewText, rating: rating}, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
 const BooksService = {
     getAllBooks,
     getBookById,
     getBookReviews,
-    calculateBookPrice
+    calculateBookPrice,
+    addBookReview
 };
 
 export default BooksService;

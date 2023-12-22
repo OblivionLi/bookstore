@@ -5,4 +5,5 @@ export default interface IUserAddresses {
     address: IUserShippingAddress | IUserBillingAddress | null;
     onSave: (isSuccessful: boolean) => void;
     onClose: () => void;
+    openEdit: boolean;
 }

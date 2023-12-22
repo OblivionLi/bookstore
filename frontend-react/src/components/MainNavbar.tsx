@@ -1,85 +1,268 @@
-import React from 'react';
+import * as React from 'react';
+import {styled, alpha} from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import InputBase from '@mui/material/InputBase';
+import Badge from '@mui/material/Badge';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SearchIcon from '@mui/icons-material/Search';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MoreIcon from '@mui/icons-material/MoreVert';
 import {Link, useNavigate} from "react-router-dom";
 import LocalStorageService from "../services/LocalStorageService";
+import {Divider} from "@mui/material";
 
-function MainNavbar() {
+const Search = styled('div')(({theme}) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(3),
+        width: 'auto',
+    },
+}));
+
+const SearchIconWrapper = styled('div')(({theme}) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({theme}) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            width: '20ch',
+        },
+    },
+}));
+
+export default function MainNavbar() {
     const navigate = useNavigate();
 
     const isUserLogged = LocalStorageService.isUserLogged();
-    const username = LocalStorageService.getUsernameFromLocalStorage();
     const itemsInCartCount = LocalStorageService.getCartItemCount();
 
     const handleLogout = () => {
         LocalStorageService.logoutUser();
         navigate("/");
+        setAnchorEl(null);
+        handleMobileMenuClose();
     }
 
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+        React.useState<null | HTMLElement>(null);
+
+    const isMenuOpen = Boolean(anchorEl);
+    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+    const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMobileMenuClose = () => {
+        setMobileMoreAnchorEl(null);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        handleMobileMenuClose();
+    };
+
+    const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setMobileMoreAnchorEl(event.currentTarget);
+    };
+
+    const menuId = 'primary-search-account-menu';
+    const renderMenu = (
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            id={menuId}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+        >
+            {isUserLogged ? (
+                <Box>
+                    <MenuItem onClick={handleMenuClose}>
+                        <Link to={"/orders-history"} style={{color: 'black', textDecoration: 'none'}}>
+                            Orders History
+                        </Link>
+                    </MenuItem>
+                    <MenuItem onClick={handleMenuClose}>
+                        <Link to={"/user-settings"} style={{color: 'black', textDecoration: 'none'}}>
+                            Settings
+                        </Link>
+                    </MenuItem>
+                    <Divider/>
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Box>
+            ) : (
+                <Box>
+                    <MenuItem onClick={handleMenuClose}>
+                        <Link to={"/login"} style={{color: 'black', textDecoration: 'none'}}>
+                            Login
+                        </Link>
+                    </MenuItem>
+                </Box>
+            )}
+        </Menu>
+    );
+
+    const mobileMenuId = 'primary-search-account-menu-mobile';
+    const renderMobileMenu = (
+        <Menu
+            anchorEl={mobileMoreAnchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            id={mobileMenuId}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isMobileMenuOpen}
+            onClose={handleMobileMenuClose}
+        >
+            <MenuItem>
+                <IconButton
+                    size="large"
+                    aria-label={`show ${itemsInCartCount} new notifications`}
+                    color="inherit"
+                >
+                    <Badge badgeContent={itemsInCartCount} color="error">
+                        <ShoppingCartIcon/>
+                    </Badge>
+                </IconButton>
+                <p>Cart</p>
+            </MenuItem>
+            {isUserLogged ? (
+                <MenuItem onClick={handleProfileMenuOpen}>
+                    <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="primary-search-account-menu"
+                        aria-haspopup="true"
+                        color="inherit"
+                    >
+                        <AccountCircle/>
+                    </IconButton>
+                    <p>Profile</p>
+                </MenuItem>
+            ) : (
+                <MenuItem onClick={handleMenuClose}>
+                    <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="primary-search-account-menu"
+                        aria-haspopup="true"
+                        color="inherit"
+                    >
+                        <AccountCircle/>
+                    </IconButton>
+                    <Link to={"/login"} style={{color: 'black', textDecoration: 'none'}}>
+                        Login
+                    </Link>
+                </MenuItem>
+            )}
+        </Menu>
+    );
+
     return (
-        <nav className="navbar navbar-expand-lg sticky-top bg-light">
-            <div className="container-fluid">
-                <Link className="navbar-brand" to="/">Bookstore</Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarScroll">
-                    <ul className="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll">
-                        <li className="nav-item">
-                            <Link className="nav-link active" aria-current="page" to={"/"}>Home</Link>
-                        </li>
-
-                        <li className="nav-item">
-                            <Link className="nav-link position-relative btn btn-primary" aria-current="page" to={"/cart"}>
-                                Cart
-                                <span
-                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {itemsInCartCount}
-                                    <span className="visually-hidden">unread messages</span>
-                                </span>
-                            </Link>
-                        </li>
-
-                        <form className="d-flex" role="search">
-                            <input className="form-control me-2" type="search" placeholder="Search"
-                                   aria-label="Search"/>
-                            <button className="btn btn-outline-success" type="submit">Search</button>
-                        </form>
-                    </ul>
-                    {isUserLogged ? (
-                        <ul className="navbar-nav navbar-nav-scroll">
-                            <li className="nav-item dropdown dropstart">
-                                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                   aria-expanded="false">
-                                    {username}
-                                </a>
-                                <ul className="dropdown-menu">
-                                    <li><Link className="dropdown-item" to="/user-history">History</Link></li>
-                                    <li><Link className="dropdown-item" to="/user-settings">Settings</Link></li>
-                                    <li>
-                                        <hr className="dropdown-divider"/>
-                                    </li>
-                                    <li>
-                                        <button className="dropdown-item" type="button" onClick={handleLogout}>Logout
-                                        </button>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    ) : (
-                        <ul className="navbar-nav navbar-nav-scroll gap-1">
-                            <li className="nav-item">
-                                <Link to={"/register"} className="btn btn-primary">Register</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to={"/login"} className="btn btn-primary">Login</Link>
-                            </li>
-                        </ul>
-                    )}
-                </div>
-            </div>
-        </nav>
+        <Box sx={{flexGrow: 1}}>
+            <AppBar position="static">
+                <Toolbar>
+                    <Link to={"/"} style={{color: 'white', textDecoration: 'none'}}>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{display: {xs: 'none', sm: 'block'}}}
+                        >
+                            Bookstore
+                        </Typography>
+                    </Link>
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon/>
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{'aria-label': 'search'}}
+                        />
+                    </Search>
+                    <Box sx={{flexGrow: 1}}/>
+                    <Box sx={{display: {xs: 'none', md: 'flex'}}}>
+                        <Link to={"/cart"} style={{color: 'white', textDecoration: 'none'}}>
+                            <IconButton
+                                size="large"
+                                aria-label={`show ${itemsInCartCount} new notifications`}
+                                color="inherit"
+                            >
+                                <Badge badgeContent={itemsInCartCount} color="error">
+                                    <ShoppingCartIcon/>
+                                </Badge>
+                            </IconButton>
+                        </Link>
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            aria-label="account of current user"
+                            aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={handleProfileMenuOpen}
+                            color="inherit"
+                        >
+                            <AccountCircle/>
+                        </IconButton>
+                    </Box>
+                    <Box sx={{display: {xs: 'flex', md: 'none'}}}>
+                        <IconButton
+                            size="large"
+                            aria-label="show more"
+                            aria-controls={mobileMenuId}
+                            aria-haspopup="true"
+                            onClick={handleMobileMenuOpen}
+                            color="inherit"
+                        >
+                            <MoreIcon/>
+                        </IconButton>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            {renderMobileMenu}
+            {renderMenu}
+        </Box>
     );
 }
-
-export default MainNavbar;

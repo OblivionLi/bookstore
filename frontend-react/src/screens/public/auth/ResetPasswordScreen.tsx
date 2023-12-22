@@ -4,8 +4,10 @@ import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import MainNavbar from "../../../components/MainNavbar";
 import Breadcrumb from "../../../components/breadcrumb/Breadcrumb";
 import LocalStorageService from "../../../services/LocalStorageService";
+import BreadcrumbMulti from "../../../components/breadcrumb/BreadcrumbMulti";
+import {Button, Paper, TextField} from "@mui/material";
 
-const ResetPassword = () => {
+const ResetPasswordScreen = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
@@ -99,43 +101,47 @@ const ResetPassword = () => {
     return (
         <>
             <MainNavbar/>
-            <Breadcrumb page={"Login"} />
-            <hr/>
-            <div className="container">
+            <BreadcrumbMulti items={["Register"]}/>
+            <Paper elevation={3}
+                   sx={{padding: 3, marginTop: 3, width: '85%', marginLeft: 'auto', marginRight: 'auto'}}>
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label htmlFor="password" className="form-label">New Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="password"
-                            required={true}
-                            value={formData.password}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="confirmPassword"
-                            required={true}
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                        />
-                        <div className="">{validationMessages.confirmPassword}</div>
-                    </div>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="password"
+                        label="Password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        helperText={validationMessages.password}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="confirmPassword"
+                        label="Confirm Password"
+                        type="password"
+                        value={formData.confirmPassword}
+                        error={Boolean(validationMessages.confirmPassword)}
+                        onChange={handleChange}
+                        helperText={validationMessages.confirmPassword}
+                    />
                     <div className="auth-actions">
-                        <Link to={"/login"}>Never mind, I remembered my password..</Link>
-                        <Link to={"/register"}>Don't have an account yet? Click here to register.
+                        <Link to={"/login"} style={{textDecoration: "none"}}>Never mind, I remembered my
+                            password..</Link>
+                        <Link to={"/register"} style={{textDecoration: "none"}}>Don't have an account yet? Click here to
+                            register.
                         </Link>
-                        <button type="submit" className="btn btn-primary">Reset Password</button>
+                        <Button type="submit" fullWidth variant="contained" color="primary" style={{marginTop: '1rem'}}>
+                            Reset Password
+                        </Button>
                     </div>
                 </form>
-            </div>
+            </Paper>
         </>
     );
 };
 
-export default ResetPassword;
+export default ResetPasswordScreen;

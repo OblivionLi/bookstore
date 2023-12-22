@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import BooksService from "../../services/BooksService";
 import LocalStorageService from "../../services/LocalStorageService";
+import {Divider} from "@mui/material";
 
 const CartSummary = () => {
     const cartItems = LocalStorageService.getAllCartItems();
@@ -36,10 +37,10 @@ const CartSummary = () => {
         <>
             <h4>Subtotal</h4>
             <p>{showItemsSubtotal()} &euro;</p>
-            <hr/>
+            <Divider/>
             <h4>Total with discount</h4>
             <p>{showItemsTotal()} &euro;</p>
-            <hr/>
+            <Divider/>
         </>
     );
 };

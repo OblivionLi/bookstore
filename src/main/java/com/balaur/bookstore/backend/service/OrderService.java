@@ -49,6 +49,7 @@ public class OrderService {
 
     @Transactional
     public ResponseEntity<PlaceOrderResponse> placeOrder(Authentication authentication, PlaceOrderRequest request) {
+        //TODO:: Add an orderId unique for each order when created
         User user = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
 
         if (user == null) {
