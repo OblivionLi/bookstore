@@ -21,6 +21,6 @@ public class AudioBook extends Book implements BookMandatoryActions {
 
     @Override
     public String getBookType() {
-        return "audio book";
+        return "audio";
     }
 }

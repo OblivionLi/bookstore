@@ -6,7 +6,9 @@ import {Link, useNavigate} from "react-router-dom";
 import BooksService from "../../../services/BooksService";
 import CartSummary from "../../../components/cart/CartSummary";
 import BreadcrumbMulti from "../../../components/breadcrumb/BreadcrumbMulti";
-import {Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import {Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton} from "@mui/material";
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
 
 const CartScreen = () => {
     const navigate = useNavigate();
@@ -19,6 +21,20 @@ const CartScreen = () => {
             navigate("/cart")
         }
     }
+
+    const increaseQuantity = (id: number) => {
+        const isItemUpdated = LocalStorageService.increaseItemQuantity(id);
+        if (isItemUpdated) {
+            navigate("/cart");
+        }
+    };
+
+    const decreaseQuantity = (id: number) => {
+        const isItemUpdated = LocalStorageService.decreaseItemQuantity(id);
+        if (isItemUpdated) {
+            navigate("/cart");
+        }
+    };
 
     return (
         <>
@@ -35,6 +51,7 @@ const CartScreen = () => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>Title</TableCell>
+                                            <TableCell>Type</TableCell>
                                             <TableCell>Discount</TableCell>
                                             <TableCell>Price</TableCell>
                                             <TableCell>Quantity</TableCell>
@@ -45,14 +62,34 @@ const CartScreen = () => {
                                         {cartItems && cartItems.map((cartItem: IBooksData, index: number) => (
                                             <TableRow key={index}>
                                                 <TableCell>{cartItem?.title}</TableCell>
+                                                <TableCell>{cartItem?.type}</TableCell>
                                                 <TableCell>{cartItem?.discount} %</TableCell>
                                                 <TableCell>
                                                     <del>{cartItem?.price} &euro;</del>
                                                     | {BooksService.calculateBookPrice(cartItem?.price, cartItem?.discount).toFixed(2)} &euro;
                                                 </TableCell>
                                                 <TableCell
-                                                    className="text-right">{cartItem.quantity ? cartItem.quantity : "Virtual"}</TableCell>
-                                                <TableCell align="right">
+                                                    className="text-right">
+                                                    {cartItem.type === 'physical' ? cartItem.quantity == 1 ? (
+                                                        <>
+                                                            {cartItem.quantity}
+                                                            <IconButton color="primary" size="small" onClick={() => increaseQuantity(cartItem?.id)}>
+                                                                <ArrowUpward fontSize="inherit" />
+                                                            </IconButton>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {cartItem.quantity}
+                                                            <IconButton color="primary" size="small" onClick={() => increaseQuantity(cartItem?.id)}>
+                                                                <ArrowUpward fontSize="inherit" />
+                                                            </IconButton>
+                                                            <IconButton color="primary" size="small" onClick={() => decreaseQuantity(cartItem?.id)}>
+                                                                <ArrowDownward fontSize="inherit" />
+                                                            </IconButton>
+                                                        </>
+                                                    ) : "Virtual"}
+                                                </TableCell>
+                                                <TableCell>
                                                     <Button variant="contained" color="secondary"
                                                             onClick={() => removeItemFromCart(cartItem?.id)}>Remove</Button>
                                                 </TableCell>

@@ -15,6 +15,6 @@ public class NormalBook extends Book implements BookMandatoryActions {
 
     @Override
     public String getBookType() {
-        return "physical book";
+        return "physical";
     }
 }

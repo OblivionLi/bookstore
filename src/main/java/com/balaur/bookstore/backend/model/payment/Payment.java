@@ -26,8 +26,8 @@ public class Payment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date paymentDate;
     private double amount;
-    private PaymentStatus paymentStatus;
-    private PaymentMethod paymentMethod;
+    private String paymentStatus;
+    private String paymentMethod;
     private String transactionId;
     private String currency;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "payment")

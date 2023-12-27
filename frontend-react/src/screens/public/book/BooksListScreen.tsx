@@ -62,9 +62,8 @@ function BooksListScreen() {
     return (
         <Paper elevation={3} style={{padding: '3rem', margin: '2rem'}}>
             <BookFilters/>
-
             <Grid container spacing={2} justifyContent="center">
-                {loading ? Array.from(new Array(9)).map((_, index) => <>{bookSkeleton}</>) :
+                {loading ? Array.from(new Array(9)).map((_, index) => <React.Fragment key={index}>{bookSkeleton}</React.Fragment>) :
                     books && books.map((book, index) => (
                         <Grid item xs={12} sm={6} md={4} lg={3} key={index} justifyContent="center">
                             <Card sx={{maxWidth: 345, marginLeft: 'auto', marginRight: 'auto'}}>
@@ -86,7 +85,7 @@ function BooksListScreen() {
                                 </CardActionArea>
                                 <CardActions style={{justifyContent: "space-between"}}>
                                     <Button size="small" color="primary">
-                                        <Link to={`/books/${book?.id}`} color="primary" style={{textDecoration: "none"}}>
+                                        <Link to={`/book/${book?.slug}`} color="primary" style={{textDecoration: "none"}}>
                                             View Book
                                         </Link>
                                     </Button>

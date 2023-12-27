@@ -17,7 +17,7 @@ function App() {
     return (
         <Routes>
             <Route path={"/"} element={<HomeScreen/>}/>
-            <Route path={"/books/:id"} element={<ShowBookScreen/>}/>
+            <Route path={"/book/:slug"} element={<ShowBookScreen/>}/>
             <Route path={"/admin"} element={<AdminScreen/>}/>
 
             {/*  Auth routes  */}

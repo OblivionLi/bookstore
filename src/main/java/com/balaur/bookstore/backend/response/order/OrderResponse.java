@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponse {
     private Long id;
+    private String orderId;
     private String notes;
     private String orderDate;
     private double shippingCost;

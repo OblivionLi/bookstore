@@ -85,7 +85,7 @@ const BookReviewsScreen = ({bookId}: { bookId: number | undefined }) => {
 
             <Paper style={{padding: "2rem"}}>
                 {reviews.length > 0 ? reviews.map((review, index) => (
-                    <>
+                    <React.Fragment key={index}>
                         <div className="review" key={index}>
                             <p><b>{review?.username}</b> added at: {new Date(review?.createdAt).toLocaleString()}</p>
                             <span><StarRating averageRating={review?.rating || 0}/></span>
@@ -97,7 +97,7 @@ const BookReviewsScreen = ({bookId}: { bookId: number | undefined }) => {
                             totalPages={totalPages}
                             onPageChange={handlePageChange}
                         />
-                    </>
+                    </React.Fragment>
                 )) : (
                     <p>This book has no reviews yet.</p>
                 )}

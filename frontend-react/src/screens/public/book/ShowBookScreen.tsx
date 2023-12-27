@@ -11,23 +11,23 @@ import BreadcrumbMulti from "../../../components/breadcrumb/BreadcrumbMulti";
 import {Button, Divider, Paper, Skeleton} from "@mui/material";
 
 const ShowBookScreen = () => {
-    const {id} = useParams<{ id: string }>();
+    const {slug} = useParams<{ slug: string }>();
     const [book, setBook] = useState<IBooksData | undefined>();
     const [bookPriceWithDiscount, setBookPriceWithDiscount] = useState("0.00");
     const [loading, setLoading] = useState(true);
     const [isInCart, setIsInCart] = useState(false);
 
     useEffect(() => {
-        if (id) {
+        if (slug) {
             fetchBook();
 
-            const itemInCart = LocalStorageService.isItemInCart(parseInt(id))
+            const itemInCart = LocalStorageService.isItemInCart(slug)
             setIsInCart(itemInCart);
         }
-    }, [id]);
+    }, [slug]);
 
     const fetchBook = () => {
-        BooksService.getBookById(id!)
+        BooksService.getBookById(slug!)
             .then((response: any) => {
                 const bookData: IBooksData = response?.data;
                 setBook(bookData);

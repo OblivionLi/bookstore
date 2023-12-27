@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import MainNavbar from "../../../../components/MainNavbar";
-import {Link, Route, Routes, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import LocalStorageService from "../../../../services/LocalStorageService";
 import UserDetailsScreen from "./UserDetailsScreen";
 import IUserTokenDecodedData from "../../../../types/user/IUserTokenDecodedData";

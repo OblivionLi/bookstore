@@ -13,7 +13,6 @@ import IUserShippingAddressRequest from "../../../types/user/IUserShippingAddres
 import IUserBillingAddressRequest from "../../../types/user/IUserBillingAddressRequest";
 import IPlaceOrderRequest from "../../../types/order/IPlaceOrderRequest";
 import OrdersService from "../../../services/OrdersService";
-import IPlaceOrderResponse from "../../../types/order/IPlaceOrderResponse";
 import {Link, useNavigate} from "react-router-dom";
 import {Button, Divider, Grid, List, ListItem, Paper, TextField, Typography} from "@mui/material";
 
@@ -129,7 +128,7 @@ const ShippingScreen = () => {
         OrdersService.placeOrder(placeOrder)
             .then((response: any) => {
                 LocalStorageService.removeItemsFromCart();
-                navigate(`/order/${response.data?.orderId}`)
+                navigate(`/order/${response.data?.id}`)
             })
             .catch((e: Error) => {
                 console.log(e);
@@ -149,14 +148,15 @@ const ShippingScreen = () => {
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                         <Typography variant="h5">Shipping Address:</Typography>
+                        <Divider/>
                         <List>
                             <ListItem>Country: {mapToAddress(defaultShippingAddress)?.country}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultShippingAddress)?.city}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultShippingAddress)?.state}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultShippingAddress)?.street}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultShippingAddress)?.phoneNumber}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultShippingAddress)?.zipcode}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultShippingAddress)?.recipientName}</ListItem>
+                            <ListItem>City: {mapToAddress(defaultShippingAddress)?.city}</ListItem>
+                            <ListItem>State: {mapToAddress(defaultShippingAddress)?.state}</ListItem>
+                            <ListItem>Street: {mapToAddress(defaultShippingAddress)?.street}</ListItem>
+                            <ListItem>Phone Number: {mapToAddress(defaultShippingAddress)?.phoneNumber}</ListItem>
+                            <ListItem>Zip Code: {mapToAddress(defaultShippingAddress)?.zipcode}</ListItem>
+                            <ListItem>Recipient Name: {mapToAddress(defaultShippingAddress)?.recipientName}</ListItem>
                         </List>
 
                         <Button
@@ -175,14 +175,15 @@ const ShippingScreen = () => {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography variant="h5">Billing Address:</Typography>
+                        <Divider/>
                         <List>
                             <ListItem>Country: {mapToAddress(defaultBillingAddress)?.country}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultBillingAddress)?.city}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultBillingAddress)?.state}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultBillingAddress)?.street}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultBillingAddress)?.phoneNumber}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultBillingAddress)?.zipcode}</ListItem>
-                            <ListItem>Country: {mapToAddress(defaultBillingAddress)?.billingName}</ListItem>
+                            <ListItem>City: {mapToAddress(defaultBillingAddress)?.city}</ListItem>
+                            <ListItem>State: {mapToAddress(defaultBillingAddress)?.state}</ListItem>
+                            <ListItem>Street: {mapToAddress(defaultBillingAddress)?.street}</ListItem>
+                            <ListItem>Phone Number: {mapToAddress(defaultBillingAddress)?.phoneNumber}</ListItem>
+                            <ListItem>Zip Code: {mapToAddress(defaultBillingAddress)?.zipcode}</ListItem>
+                            <ListItem>Billing Name: {mapToAddress(defaultBillingAddress)?.billingName}</ListItem>
                         </List>
 
                         <Button
@@ -202,6 +203,7 @@ const ShippingScreen = () => {
 
                     <Grid item xs={12} md={4}>
                         <Typography variant="h5">Items list:</Typography>
+                        <Divider/>
                         <List>
                             {cartItems && cartItems.map((cartItem: IBooksData, index: number) => (
                                 <ListItem key={index}>

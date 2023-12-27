@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IUserShippingAddress} from "../../../../types/user/IUserShippingAddress";
 import UsersService from "../../../../services/UsersService";
 import EditShippingAddressModal from "../../../../components/address/EditShippingAddressModal";

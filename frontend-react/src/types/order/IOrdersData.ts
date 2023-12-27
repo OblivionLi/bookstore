@@ -4,6 +4,7 @@ import OrderLineItem from "./IOrderLineItem";
 
 export default interface IOrdersData {
     id: number;
+    orderId: string;
     notes: string;
     orderDate: string;
     shippingCost: number;

@@ -38,6 +38,17 @@ const getUsernameFromLocalStorage = () => {
     return decodedToken.lastName;
 }
 
+const getEmailFromLocalStorage = () => {
+    const token = localStorage.getItem("userInfo");
+    if (!token || isUserTokenExpired(token)) {
+        localStorage.removeItem("userInfo");
+        return null;
+    }
+
+    const decodedToken: { sub: string } = jose.decodeJwt(token) as { sub: string };
+    return decodedToken.sub;
+}
+
 const logoutUser = () => {
     localStorage.removeItem("userInfo");
 }
@@ -78,14 +89,17 @@ const addItemToCartStorage = (book: IBooksData) => {
     const existingCartData = localStorage.getItem("cart");
     const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
 
+    // quantity should always be 1 when first inserted in cart
+    book.quantity = 1;
+
     if (cartArray.length < 15) {
         cartArray.push(book);
         localStorage.setItem("cart", JSON.stringify(cartArray));
     }
 }
 
-const isItemInCart = (id: number | undefined) => {
-    if (!id) {
+const isItemInCart = (slug: string | undefined) => {
+    if (!slug) {
         return false;
     }
 
@@ -93,7 +107,7 @@ const isItemInCart = (id: number | undefined) => {
     const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
 
     for (let i = 0; i < cartArray.length; i++) {
-        if (cartArray[i].id === id) {
+        if (cartArray[i].slug === slug) {
             return true;
         }
     }
@@ -135,6 +149,36 @@ const removeItemsFromCart = () => {
     localStorage.removeItem("cart");
 }
 
+const decreaseItemQuantity = (id: number) => {
+    const existingCartData = localStorage.getItem("cart");
+    const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
+
+    const itemIndex = cartArray.findIndex((item: IBooksData) => item.id === id);
+
+    if (itemIndex !== -1) {
+        cartArray[itemIndex].quantity -= 1;
+        localStorage.setItem("cart", JSON.stringify(cartArray));
+        return true;
+    }
+
+    return false;
+}
+
+const increaseItemQuantity = (id: number) => {
+    const existingCartData = localStorage.getItem("cart");
+    const cartArray = existingCartData ? JSON.parse(existingCartData) : [];
+
+    const itemIndex = cartArray.findIndex((item: IBooksData) => item.id === id);
+
+    if (itemIndex !== -1) {
+        cartArray[itemIndex].quantity += 1;
+        localStorage.setItem("cart", JSON.stringify(cartArray));
+        return true;
+    }
+
+    return false;
+}
+
 const LocalStorageService = {
     addUserTokenToLocalStorage,
     getUserPermissions,
@@ -148,7 +192,10 @@ const LocalStorageService = {
     isItemInCart,
     getAllCartItems,
     removeItemFromCart,
-    removeItemsFromCart
+    removeItemsFromCart,
+    increaseItemQuantity,
+    decreaseItemQuantity,
+    getEmailFromLocalStorage
 }
 
 export default LocalStorageService;

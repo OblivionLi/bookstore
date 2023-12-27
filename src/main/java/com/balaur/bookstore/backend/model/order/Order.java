@@ -27,6 +27,7 @@ public class Order {
     private User user;
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;
+    private String orderId;
     private double totalPrice;
     private double subtotal;
     private double taxAmount;

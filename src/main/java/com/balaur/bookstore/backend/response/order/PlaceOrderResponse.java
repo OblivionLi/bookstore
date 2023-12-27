@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceOrderResponse {
-    private Long orderId;
+    private Long id;
+    private String orderId;
     private double orderTotal;
     private String recipientName;
     private String billingName;

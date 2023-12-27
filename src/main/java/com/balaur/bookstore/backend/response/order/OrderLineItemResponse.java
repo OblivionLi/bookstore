@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderLineItemResponse {
-    private Long orderId;
+    private Long id;
     private int quantity;
     private double pricePerUnit;
     private double totalPrice;

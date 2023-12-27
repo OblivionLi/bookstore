@@ -7,8 +7,8 @@ const getAllBooks = (page: number) => {
     return axios.get<Array<IBooksData>>(`/api/book?page=${page}`);
 }
 
-const getBookById = (id: string) => {
-    return axios.get<IBooksData>(`/api/book/${id}`);
+const getBookById = (slug: string) => {
+    return axios.get<IBooksData>(`/api/book/${slug}`);
 }
 
 const getBookReviews = (bookId: number, page: number) => {
@@ -16,7 +16,7 @@ const getBookReviews = (bookId: number, page: number) => {
 }
 
 const calculateBookPrice = (price: number, discount: number): number => {
-    if (discount == 0) {
+    if (discount === 0) {
         return price;
     }
 

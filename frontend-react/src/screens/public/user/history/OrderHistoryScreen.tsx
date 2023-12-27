@@ -6,16 +6,23 @@ import OrdersService from "../../../../services/OrdersService";
 import ExpandedOrderDetails from "../../../../components/order/ExpandedOrderDetails";
 import DataRow from "../../../../types/order/IDataRow";
 import BreadcrumbMulti from "../../../../components/breadcrumb/BreadcrumbMulti";
-import {Button, Grid, Paper, Skeleton} from "@mui/material";
+import {Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Paper, Skeleton} from "@mui/material";
 import Box from "@mui/material/Box";
 import {useNavigate} from "react-router-dom";
 import InfoIcon from '@mui/icons-material/Info';
 import PaymentIcon from '@mui/icons-material/Payment';
+import CheckoutForm from "./CheckoutForm";
+import {Elements} from "@stripe/react-stripe-js";
+import {loadStripe} from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("pk_test_51ORDmvH7pzB8f6vMIobMlu8DUccIepw8c6ovdUvkVXqrwpvCXmDYDKuUmiHiHzgnj4N4ttoXLPTnCcHZ79AV3nfx00blu2Erei");
 
 const OrderHistoryScreen = () => {
     const navigate = useNavigate();
     const [orders, setOrders] = useState<IOrdersData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [openPay, setOpenPay] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<DataRow | null>(null);
 
     useEffect(() => {
         fetchOrders();
@@ -34,12 +41,28 @@ const OrderHistoryScreen = () => {
         },
         {
             name: 'Order Status',
-            selector: row => row.orderStatus,
+            cell: (row: DataRow) => (
+                <Chip
+                    label={row?.orderStatus}
+                    style={{
+                        backgroundColor: row?.orderStatus === 'Completed' ? 'green' : 'default',
+                        color: row?.orderStatus === 'Completed' ? 'white' : 'black'
+                    }}
+                />
+            ),
             sortable: true,
         },
         {
             name: 'Payment Status',
-            selector: row => row.paymentStatus,
+            cell: (row: DataRow) => (
+                <Chip
+                    label={row?.paymentStatus}
+                    style={{
+                        backgroundColor: row?.paymentStatus === 'Payed' ? 'green' : 'default',
+                        color: row?.paymentStatus === 'Payed' ? 'white' : 'black'
+                    }}
+                />
+            ),
             sortable: true,
         },
         {
@@ -64,7 +87,7 @@ const OrderHistoryScreen = () => {
                     <Button
                         variant="contained"
                         color={row.paymentStatus === 'Successful' || row.paymentStatus === 'Refunded' || row.paymentStatus === 'Canceled' ? 'secondary' : 'success'}
-                        onClick={() => handleOptionsClick(row)}
+                        onClick={() => handlePay(row)}
                         disabled={row.paymentStatus === 'Successful' || row.paymentStatus === 'Refunded' || row.paymentStatus === 'Canceled'}
                         size="small"
                         startIcon={<PaymentIcon />}
@@ -82,11 +105,14 @@ const OrderHistoryScreen = () => {
                     </Button>
                 </Box>
             ),
-            button: true,
         }
     ];
 
-    const handleOptionsClick = (row: DataRow) => {}
+    const handlePay = (row: DataRow) => {
+        setOpenPay(true);
+        setSelectedRow(row);
+    }
+
     const handleShow = (row: DataRow) => {
         navigate(`/order/${row.id}`);
     }
@@ -121,6 +147,11 @@ const OrderHistoryScreen = () => {
     };
 
     const data: DataRow[] = mapOrdersToDataRow(orders);
+
+    const handlePaymentSuccess = () => {
+        setOpenPay(false);
+        fetchOrders();
+    };
 
     return (
         <>
@@ -166,6 +197,18 @@ const OrderHistoryScreen = () => {
                     </Paper>
                 )
             }
+
+            <Elements stripe={stripePromise}>
+                <Dialog open={openPay} onClose={() => setOpenPay(false)} fullWidth maxWidth="sm">
+                    <DialogTitle>Complete Payment</DialogTitle>
+                    <DialogContent>
+                        <CheckoutForm selectedRow={selectedRow} setOpenPay={setOpenPay} onPaymentSuccess={handlePaymentSuccess} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenPay(false)}>Close</Button>
+                    </DialogActions>
+                </Dialog>
+            </Elements>
         </>
     );
 };

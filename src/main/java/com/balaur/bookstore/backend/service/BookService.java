@@ -104,11 +104,11 @@ public class BookService {
         }
     }
 
-    public ResponseEntity<BookResponse> getBook(Long id) {
-        Book book = bookRepository.findBookById(id);
+    public ResponseEntity<BookResponse> getBook(String slug) {
+        Book book = bookRepository.findBookBySlug(slug);
         if (book == null) {
-            log.warn("[BookService] " + new Date() + " | Book with id " + id + " not found.");
-            throw new BookNotFoundException("Book with id " + id + " not found.");
+            log.warn("[BookService] " + new Date() + " | Book with id " + slug + " not found.");
+            throw new BookNotFoundException("Book with id " + slug + " not found.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(

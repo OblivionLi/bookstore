@@ -31,10 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -64,6 +61,9 @@ public class OrderService {
 
         Order newOrder = new Order();
         orderRepository.save(newOrder);
+
+        String orderId = "BK_" + newOrder.getId() + "_" + UUID.randomUUID().toString().substring(0, 6);
+        newOrder.setOrderId(orderId);
 
         List<OrderLineItem> orderLineItems = getMappedOrderLineItems(newOrder, request.getOrderItems());
         orderLineItemRepository.saveAll(orderLineItems);
@@ -99,7 +99,8 @@ public class OrderService {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(
                             PlaceOrderResponse.builder()
-                                    .orderId(newOrder.getId())
+                                    .id(newOrder.getId())
+                                    .orderId(newOrder.getOrderId())
                                     .orderTotal(newOrder.getTotalPrice())
                                     .recipientName(newOrder.getOrderShippingAddress().getRecipientName())
                                     .billingName(newOrder.getOrderBillingAddress().getBillingName())
@@ -167,9 +168,11 @@ public class OrderService {
             double orderLineItemTotal;
             if (book instanceof NormalBook) {
                 orderLineItem.setQuantity(orderItemRequest.getQuantity());
-                orderLineItemTotal = (orderItemRequest.getQuantity() * orderItemRequest.getItemPrice()) * ((double) orderItemRequest.getDiscount() / 100);
+                double discountAmount = (orderItemRequest.getQuantity() * orderItemRequest.getItemPrice()) * ((double) orderItemRequest.getDiscount() / 100);
+                orderLineItemTotal = (orderItemRequest.getQuantity() * orderItemRequest.getItemPrice()) - discountAmount;
             } else {
-                orderLineItemTotal = orderItemRequest.getItemPrice() * ((double) orderItemRequest.getDiscount() / 100);
+                double discountAmount = orderItemRequest.getItemPrice() * ((double) orderItemRequest.getDiscount() / 100);
+                orderLineItemTotal = orderItemRequest.getItemPrice() - discountAmount;
             }
 
             orderLineItem.setTotalPrice(orderLineItemTotal);
@@ -209,12 +212,13 @@ public class OrderService {
         for (OrderLineItem orderLineItem : order.getOrderLineItems()) {
             orderLineItemResponses.add(
                     OrderLineItemResponse.builder()
-                            .orderId(orderLineItem.getOrder().getId())
+                            .id(orderLineItem.getOrder().getId())
                             .bookTitle(orderLineItem.getBook().getTitle())
                             .pricePerUnit(orderLineItem.getPricePerUnit())
                             .totalPrice(orderLineItem.getTotalPrice())
                             .discount(orderLineItem.getDiscount())
                             .bookType(getLineItemType(orderLineItem))
+                            .quantity(orderLineItem.getQuantity())
                             .build()
             );
         }
@@ -223,6 +227,7 @@ public class OrderService {
 
         return OrderResponse.builder()
                 .id(order.getId())
+                .orderId(order.getOrderId())
                 .notes(order.getNotes())
                 .orderDate(dateFormat.format(order.getOrderDate()))
                 .shippingCost(order.getShippingCost())

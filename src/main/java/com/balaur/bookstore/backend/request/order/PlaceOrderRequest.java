@@ -27,7 +27,7 @@ public class PlaceOrderRequest {
         return "PlaceOrderRequest{" +
                 "orderItems=" + orderItems +
                 ", userShippingAddress=" + userShippingAddress +
-                ", userBillingAddressId=" + userBillingAddress +
+                ", userBillingAddress=" + userBillingAddress +
                 ", deliveryNotes='" + deliveryNotes + '\'' +
                 '}';
     }

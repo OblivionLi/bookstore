@@ -15,7 +15,6 @@ public class OrderServiceUtil {
     }
 
     public static double calculateOrderLineItemsTotal(List<OrderLineItem> orderLineItems) {
-        System.out.println("CEHCK TOTAL CALCULATION: " + orderLineItems);
         double total = 0;
         for (OrderLineItem orderLineItem : orderLineItems) {
             int quantity = Math.max(orderLineItem.getQuantity(), 1);
