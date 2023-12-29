@@ -6,6 +6,7 @@ import com.balaur.bookstore.backend.dto.UserAddressMappingDto;
 import com.balaur.bookstore.backend.model.email.EmailDetails;
 import com.balaur.bookstore.backend.model.email.EmailServiceImpl;
 import com.balaur.bookstore.backend.repository.user.*;
+import com.balaur.bookstore.backend.response.admin.user.UserResponse;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
 import com.balaur.bookstore.backend.exception.user.*;
 import com.balaur.bookstore.backend.model.user.*;
@@ -92,6 +93,8 @@ public class UserService implements UserDetailsService {
         }
 
         newUser.addUserGroups(userGroup);
+        newUser.setCreatedAt(LocalDateTime.now());
+        newUser.setUpdatedAt(LocalDateTime.now());
         newUser = userRepository.save(newUser);
 
         UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder()
@@ -578,5 +581,37 @@ public class UserService implements UserDetailsService {
         userDetailsResponse.setToken(userAuthenticationProvider.createToken(userDetailsResponse));
 
         return ResponseEntity.status(HttpStatus.OK).body(userDetailsResponse);
+    }
+
+    public ResponseEntity<List<UserResponse>> getAllUsers(Authentication authentication) {
+        User foundUser = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
+
+        if (foundUser == null) {
+            log.warn("[UserService] " + new Date() + " | User: " + authentication.getName() +  " not found.");
+            throw new UsernameNotFoundException("User: " + authentication.getName() +  " not found.");
+        }
+
+        List<User> users = userRepository.findAll();
+        List<UserResponse> userResponses = new ArrayList<>();
+
+        for (User user : users) {
+            userResponses.add(
+                    UserResponse.builder()
+                            .id(user.getId())
+                            .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .locked(user.isLocked())
+                            .email(user.getEmail())
+                            .userGroupCodes(UserServiceUtil.getUserGroupCodes(user))
+                            .userBillingAddresses(UserServiceUtil.mapUserBillingAddressResponse(user.getUserBillingAddresses()))
+                            .userShippingAddress(UserServiceUtil.mapUserShippingAddressResponse(user.getUserShippingAddresses()))
+                            .bookRatings(UserServiceUtil.getAllUserBookRatingsCount(user.getBookRatings()))
+                            .createdAt(user.getCreatedAt())
+                            .updatedAt(user.getUpdatedAt())
+                            .build()
+            );
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(userResponses);
     }
 }

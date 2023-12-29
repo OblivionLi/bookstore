@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,8 @@ public class User {
     private String email;
     private String password;
     private boolean locked;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(name = "user_groups",
             joinColumns = @JoinColumn(name = "user_id"),

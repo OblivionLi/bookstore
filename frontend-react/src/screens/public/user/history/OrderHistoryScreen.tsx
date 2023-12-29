@@ -128,8 +128,6 @@ const OrderHistoryScreen = () => {
             });
     };
 
-
-
     const mapOrdersToDataRow = (orders: IOrdersData[]): DataRow[] => {
         return orders.map((order) => ({
             id: order.id,

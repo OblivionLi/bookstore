@@ -1,6 +1,9 @@
 package com.balaur.bookstore.backend.util.user;
 
+import com.balaur.bookstore.backend.model.book.BookRating;
 import com.balaur.bookstore.backend.model.user.*;
+import com.balaur.bookstore.backend.response.user.UserBillingAddressResponse;
+import com.balaur.bookstore.backend.response.user.UserShippingAddressResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -38,5 +41,49 @@ public class UserServiceUtil {
         }
 
         repository.saveAll(userAddresses);
+    }
+
+    public static UserBillingAddressResponse mapUserBillingAddressResponse(Set<UserBillingAddress> userBillingAddresses) {
+        Optional<UserBillingAddress> defaultBillingAddressOptional = userBillingAddresses.stream()
+                .filter(UserBillingAddress::isDefault)
+                .findFirst();
+
+        return defaultBillingAddressOptional.map(userBillingAddress ->
+                        UserBillingAddressResponse.builder()
+                                .id(userBillingAddress.getId())
+                                .street(userBillingAddress.getStreet())
+                                .city(userBillingAddress.getCity())
+                                .state(userBillingAddress.getState())
+                                .country(userBillingAddress.getCountry())
+                                .phoneNumber(userBillingAddress.getPhoneNumber())
+                                .zipcode(userBillingAddress.getZipcode())
+                                .billingName(userBillingAddress.getBillingName())
+                                .isDefault(userBillingAddress.isDefault())
+                                .build())
+                .orElse(null);
+    }
+
+    public static UserShippingAddressResponse mapUserShippingAddressResponse(Set<UserShippingAddress> userShippingAddresses) {
+        Optional<UserShippingAddress> defaultShippingAddressOptional = userShippingAddresses.stream()
+                .filter(UserShippingAddress::isDefault)
+                .findFirst();
+
+        return defaultShippingAddressOptional.map(userShippingAddress ->
+                        UserShippingAddressResponse.builder()
+                                .id(userShippingAddress.getId())
+                                .street(userShippingAddress.getStreet())
+                                .city(userShippingAddress.getCity())
+                                .state(userShippingAddress.getState())
+                                .country(userShippingAddress.getCountry())
+                                .phoneNumber(userShippingAddress.getPhoneNumber())
+                                .zipcode(userShippingAddress.getZipcode())
+                                .recipientName(userShippingAddress.getRecipientName())
+                                .isDefault(userShippingAddress.isDefault())
+                                .build())
+                .orElse(null);
+    }
+
+    public static Integer getAllUserBookRatingsCount(Set<BookRating> bookRatings) {
+        return Math.toIntExact(bookRatings.size());
     }
 }

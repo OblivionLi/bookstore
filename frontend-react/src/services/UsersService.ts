@@ -4,6 +4,7 @@ import LocalStorageService from "./LocalStorageService";
 import {IUserShippingAddress} from "../types/user/IUserShippingAddress";
 import {IUserBillingAddress} from "../types/user/IUserBillingAddress";
 import IUserDefaultAddress from "../types/user/IUserDefaultAddress";
+import IUserResponse from "../types/user/IUserResponse";
 
 const registerUser = (formData: object) => {
     return axios.post<Array<IUserDtoResponse>>(`/api/auth/register`, JSON.stringify(formData), {
@@ -115,6 +116,15 @@ const resetUserPassword = (formData: object) => {
     return axios.patch(`/api/auth/reset-password`, formData);
 }
 
+const getAllUsers = () => {
+    return axios.get<IUserResponse>(`/api/admin/users`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
 
 const UsersService = {
     registerUser,
@@ -130,7 +140,8 @@ const UsersService = {
     getDefaultBillingAddress,
     forgotPassword,
     isResetPasswordTokenValid,
-    resetUserPassword
+    resetUserPassword,
+    getAllUsers
 };
 
 export default UsersService;

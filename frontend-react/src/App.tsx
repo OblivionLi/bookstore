@@ -18,7 +18,7 @@ function App() {
         <Routes>
             <Route path={"/"} element={<HomeScreen/>}/>
             <Route path={"/book/:slug"} element={<ShowBookScreen/>}/>
-            <Route path={"/admin"} element={<AdminScreen/>}/>
+            <Route path={"/admin/*"} element={<AdminScreen/>}/>
 
             {/*  Auth routes  */}
             <Route path={"/register"} element={<RegisterScreen/>} />

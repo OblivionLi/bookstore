@@ -8,5 +8,4 @@ export default interface IUserDefaultAddress {
     state: string;
     street: string;
     zipcode: string;
-
 }
