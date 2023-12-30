@@ -3,9 +3,12 @@ package com.balaur.bookstore.backend.service;
 import com.balaur.bookstore.backend.config.UserAuthenticationProvider;
 import com.balaur.bookstore.backend.dto.UserAddressDto;
 import com.balaur.bookstore.backend.dto.UserAddressMappingDto;
+import com.balaur.bookstore.backend.model.book.BookRating;
 import com.balaur.bookstore.backend.model.email.EmailDetails;
 import com.balaur.bookstore.backend.model.email.EmailServiceImpl;
+import com.balaur.bookstore.backend.repository.BookRatingRepository;
 import com.balaur.bookstore.backend.repository.user.*;
+import com.balaur.bookstore.backend.response.admin.role.UserRolesResponse;
 import com.balaur.bookstore.backend.response.admin.user.UserResponse;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
 import com.balaur.bookstore.backend.exception.user.*;
@@ -33,6 +36,7 @@ import org.springframework.stereotype.Service;
 import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +50,7 @@ public class UserService implements UserDetailsService {
     private final UserGroupRepository userGroupRepository;
     private final UserAuthenticationProvider userAuthenticationProvider;
     private final EmailServiceImpl emailService;
+    private final BookRatingRepository bookRatingRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -228,17 +233,22 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<String> lockUser(Authentication authentication, UserLockRequest request) {
-        User user = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
-        if (user == null) {
+    @Transactional
+    public ResponseEntity<String> lockUser(Authentication authentication, Long id, UserLockRequest request) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
             log.warn("[UserService] " + new Date() + " | User not found.");
             throw new UsernameNotFoundException("User not found.");
         }
 
-        // TODO:: check if user has correct role
+        Optional<User> userToBeLocked = userRepository.findById(id);
+        if (userToBeLocked.isEmpty()) {
+            log.warn("[UserService] " + new Date() + " | User to be deleted not found.");
+            throw new UsernameNotFoundException("User to be deleted not found.");
+        }
 
-        user.setLocked(request.isLockingUser());
-        userRepository.save(user);
+        userToBeLocked.get().setLocked(request.isLockingUser());
+        userRepository.save(userToBeLocked.get());
 
         String message;
         if (request.isLockingUser()) {
@@ -250,22 +260,23 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
-    public ResponseEntity<String> deleteUser(Authentication authentication, String email) {
-        User user = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
-        if (user == null) {
+    @Transactional
+    public ResponseEntity<String> deleteUser(Authentication authentication, Long id) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
             log.warn("[UserService] " + new Date() + " | User not found.");
             throw new UsernameNotFoundException("User not found.");
         }
 
-        User userToBeDeleted = userRepository.findByEmail(email);
-        if (userToBeDeleted == null) {
+        Optional<User> userToBeDeleted = userRepository.findById(id);
+        if (userToBeDeleted.isEmpty()) {
             log.warn("[UserService] " + new Date() + " | User to be deleted not found.");
             throw new UsernameNotFoundException("User to be deleted not found.");
         }
 
-        userRepository.delete(userToBeDeleted);
+        userRepository.delete(userToBeDeleted.get());
 
-        return ResponseEntity.status(HttpStatus.OK).body("User deleted.");
+        return ResponseEntity.status(HttpStatus.OK).body("User deleted with success.");
     }
 
     public ResponseEntity<UserDetailsResponse> changeDetails(Authentication authentication, UserChangeDetailsRequest request) {
@@ -613,5 +624,51 @@ public class UserService implements UserDetailsService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(userResponses);
+    }
+
+    public ResponseEntity<UserRolesResponse> getAllUsersRoles(Authentication authentication) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[UserService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        List<UserGroup> userRoles = userGroupRepository.findAll();
+
+        List<String> roleCodes = userRoles.stream()
+                .map(UserGroup::getCode)
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(new UserRolesResponse(roleCodes));
+    }
+
+    public ResponseEntity<String> editUser(Authentication authentication, Long id, UserEditRequest request) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[UserService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        Optional<User> userToBeEdited = userRepository.findById(id);
+        if (userToBeEdited.isEmpty()) {
+            log.warn("[UserService] " + new Date() + " | User to be deleted not found.");
+            throw new UsernameNotFoundException("User to be deleted not found.");
+        }
+
+        userToBeEdited.get().setEmail(request.getEmail());
+        userToBeEdited.get().getUserGroups().clear();
+
+        for (String role : request.getRoles()) {
+            UserGroup userGroup = userGroupRepository.findByCode(role);
+            if (userGroup == null) {
+                continue;
+            }
+
+            userToBeEdited.get().addUserGroups(userGroup);
+        }
+
+        userRepository.save(userToBeEdited.get());
+
+        return ResponseEntity.status(HttpStatus.OK).body("User edited with success.");
     }
 }

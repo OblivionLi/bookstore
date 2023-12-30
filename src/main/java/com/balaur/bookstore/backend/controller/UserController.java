@@ -63,17 +63,6 @@ public class UserController {
         return userService.editAddress(authentication, request);
     }
 
-    @PatchMapping("/lock/user")
-    public ResponseEntity<String> lockUser(Authentication authentication, @RequestBody @Valid UserLockRequest request) {
-        return userService.lockUser(authentication, request);
-    }
-
-    // TODO: when the user is deleted create a new user called "deleted" if it doesnt exist and assign the book review user_id to the "deleted" user
-    @DeleteMapping("/delete/user/{email}")
-    public ResponseEntity<String> deleteUser(Authentication authentication, @PathVariable String email) {
-        return userService.deleteUser(authentication, email);
-    }
-
     // TODO: this doesnt have a need in prod.
     @DeleteMapping("/delete/users")
     public void deleteAllUsers() {

@@ -22,13 +22,4 @@ public class UserGroup {
     private String code;
     @ManyToMany(mappedBy = "userGroups")
     private Set<User> users = new HashSet<>();
-
-    @Override
-    public String toString() {
-        return "UserGroup{" +
-                "id=" + id +
-                ", code='" + code + '\'' +
-                ", users=" + users +
-                '}';
-    }
 }

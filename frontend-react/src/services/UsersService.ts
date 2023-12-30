@@ -5,6 +5,8 @@ import {IUserShippingAddress} from "../types/user/IUserShippingAddress";
 import {IUserBillingAddress} from "../types/user/IUserBillingAddress";
 import IUserDefaultAddress from "../types/user/IUserDefaultAddress";
 import IUserResponse from "../types/user/IUserResponse";
+import IUsersRolesResponse from "../types/user/IUsersRolesResponse";
+import IUserEditRequest from "../types/user/IUserEditRequest";
 
 const registerUser = (formData: object) => {
     return axios.post<Array<IUserDtoResponse>>(`/api/auth/register`, JSON.stringify(formData), {
@@ -125,6 +127,41 @@ const getAllUsers = () => {
     });
 }
 
+const deleteUser = (id: number) => {
+    return axios.delete(`/api/admin/users/${id}/delete`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
+const lockUser = (id: number, newLockValue: boolean) => {
+    return axios.patch(`/api/admin/users/${id}/lock`, newLockValue,{
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
+const getUserRoles = () => {
+    return axios.get<IUsersRolesResponse>(`/api/admin/users/roles`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
+const editUser = (data: IUserEditRequest) => {
+    return axios.patch(`/api/admin/users/${data.id}/edit`, data,{
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
 
 const UsersService = {
     registerUser,
@@ -141,7 +178,11 @@ const UsersService = {
     forgotPassword,
     isResetPasswordTokenValid,
     resetUserPassword,
-    getAllUsers
+    getAllUsers,
+    deleteUser,
+    lockUser,
+    getUserRoles,
+    editUser
 };
 
 export default UsersService;

@@ -50,4 +50,12 @@ public class User {
         userGroups.remove(userGroup);
         userGroup.getUsers().remove(this);
     }
+
+    @PreRemove
+    private void preRemove() {
+        // Remove relationships
+        userBillingAddresses.clear();
+        userShippingAddresses.clear();
+        bookRatings.clear();
+    }
 }
