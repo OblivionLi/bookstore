@@ -1,31 +1,30 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
+import BooksService from "../../../services/BooksService";
+import IReviews from "../../../types/book/IReviews";
 import DataTable, {TableColumn} from "react-data-table-component";
-import UsersService from "../../../services/UsersService";
+import {Button, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
-import IUserResponse from "../../../types/user/IUserResponse";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import ExpandedUserDetails from "../../../components/user/ExpandedUserDetails";
-import EditUserDialog from "./EditUserDialog";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandedReviewDetails from "./ExpandedReviewDetails";
 import UtilsService from "../../../services/UtilsService";
+import IOrdersData from "../../../types/order/IOrdersData";
+import EditReviewDialog from "./EditReviewDialog";
 
-const AdminUsersScreen = () => {
-    const [users, setUsers] = useState<IUserResponse[]>([]);
+const AdminReviewsScreen = () => {
+    const [reviews, setReviews] = useState<IReviews[]>([]);
     const [loading, setLoading] = useState(true);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<IUserResponse | null>(null);
+    const [selectedReview, setSelectedReview] = useState<IReviews | null>(null);
 
     useEffect(() => {
-        fetchUsers();
+        fetchReviews();
     }, []);
 
-    const fetchUsers = () => {
-        UsersService.getAllUsers()
+    const fetchReviews = () => {
+        BooksService.getAllReviews()
             .then((response: any) => {
-                setUsers(response.data as IUserResponse[])
+                setReviews(response.data as IReviews[])
                 setLoading(false);
             })
             .catch((e: Error) => {
@@ -33,7 +32,7 @@ const AdminUsersScreen = () => {
             });
     };
 
-    const DateCell = ({row, selector}: { row: IUserResponse; selector: (row: IUserResponse) => Date }) => {
+    const DateCell = ({row, selector}: { row: IReviews; selector: (row: IReviews) => Date }) => {
         return (
             <Tooltip title={UtilsService.formatDate(selector(row))} arrow>
                 <Typography variant="body2" noWrap>{UtilsService.formatDate(selector(row))}</Typography>
@@ -43,11 +42,11 @@ const AdminUsersScreen = () => {
 
     const createTooltipColumn = (
         name: string,
-        selector: (row: IUserResponse) => string
-    ): TableColumn<IUserResponse> => {
+        selector: (row: IReviews) => string
+    ): TableColumn<IReviews> => {
         return {
             name,
-            cell: (row: IUserResponse) => (
+            cell: (row: IReviews) => (
                 <Tooltip title={selector(row)} arrow>
                     <Typography variant="body2" noWrap>
                         {selector(row)}
@@ -58,46 +57,36 @@ const AdminUsersScreen = () => {
         };
     };
 
-    const columns: TableColumn<IUserResponse>[] = [
+    const columns: TableColumn<IReviews>[] = [
         {
-            name: 'User ID',
+            name: 'ID',
             selector: row => row.id,
             sortable: true,
         },
-        createTooltipColumn('First Name', (row) => row.firstName),
-        createTooltipColumn('Last Name', (row) => row.lastName),
-        createTooltipColumn('Email', (row) => row.email),
         {
-            name: 'Roles',
-            cell: (row: IUserResponse) => (
-                <Tooltip title={row.userGroupCodes.join(', ')} arrow>
-                    <Typography variant="body2" noWrap>{row.userGroupCodes.join(', ')}</Typography>
-                </Tooltip>
-            ),
+            name: 'Book ID',
+            selector: row => row.bookId,
             sortable: true,
         },
+        createTooltipColumn("Book Title", (row) => row.bookTitle),
+        createTooltipColumn("User Email", (row) => row.userEmail),
         {
-            name: 'Is Locked?',
-            selector: row => row.locked ? "true" : "false",
-            sortable: true,
-        },
-        {
-            name: 'Book Ratings Count',
-            selector: row => row.bookRatings,
+            name: 'Rating',
+            selector: row => row.rating,
             sortable: true,
         },
         {
             name: 'Created At',
-            cell: (row: IUserResponse) => <DateCell row={row} selector={(row) => new Date(row.createdAt)}/>,
+            cell: (row: IReviews) => <DateCell row={row} selector={(row) => new Date(row.createdAt)}/>,
             sortable: true,
         }, {
             name: 'Updated At',
-            cell: (row: IUserResponse) => <DateCell row={row} selector={(row) => new Date(row.updatedAt)}/>,
+            cell: (row: IReviews) => <DateCell row={row} selector={(row) => new Date(row.updatedAt)}/>,
             sortable: true,
         },
         {
             name: 'Options',
-            cell: (row: IUserResponse) => (
+            cell: (row: IReviews) => (
                 <Box sx={{mt: 1, mb: 1, display: 'flex', flexDirection: 'column', gap: '8px'}}>
                     <Button
                         variant="contained"
@@ -117,55 +106,39 @@ const AdminUsersScreen = () => {
                     >
                         Delete
                     </Button>
-                    <Button
-                        variant="contained"
-                        color={row.locked ? 'secondary' : 'primary'}
-                        onClick={() => handleToggleLock(row, !row.locked)}
-                        size="small"
-                        startIcon={row.locked ? <LockOpenIcon/> : <LockIcon/>}
-                    >
-                        {row.locked ? 'Unlock' : 'Lock'}
-                    </Button>
                 </Box>
             ),
+            style: {
+                minWidth: '140px',
+            },
         }
     ];
 
-    const handleEdit = (row: IUserResponse) => {
+    const handleEdit = (row: IReviews) => {
         setEditDialogOpen(true);
-        setSelectedUser(row);
+        setSelectedReview(row);
+    }
+
+    const handleDelete = (row: IReviews) => {
+        BooksService.deleteReview(row.id)
+            .then((response: any) => {
+                fetchReviews()
+            })
+            .catch((e: Error) => {
+                console.log(e);
+            })
     }
 
     const handleEditDialogClose = () => {
         setEditDialogOpen(false);
-        setSelectedUser(null);
-        fetchUsers();
-    }
-
-    const handleToggleLock = (row: IUserResponse, newLockValue: boolean) => {
-        UsersService.lockUser(row.id, newLockValue)
-            .then((response: any) => {
-                fetchUsers()
-            })
-            .catch((e: Error) => {
-                console.log(e);
-            });
-    }
-
-    const handleDelete = (row: IUserResponse) => {
-        UsersService.deleteUser(row.id)
-            .then((response: any) => {
-                fetchUsers()
-            })
-            .catch((e: Error) => {
-                console.log(e);
-            });
+        setSelectedReview(null);
+        fetchReviews();
     }
 
     return (
         <>
             <Typography variant={"h4"} gutterBottom>
-                Users
+                Reviews
                 <Typography variant="overline" display="block" gutterBottom>
                     For columns with cut value, hover over with your cursor to view the full value.
                 </Typography>
@@ -196,27 +169,27 @@ const AdminUsersScreen = () => {
                         ))}
                     </Box>
                 ) : (
-
                     <Paper elevation={3}
                            sx={{padding: 3, marginTop: 3, marginLeft: 'auto', marginRight: 'auto'}}>
 
                         <DataTable
+                            key={reviews.length}
                             columns={columns}
-                            data={users}
+                            data={reviews}
                             pagination
                             expandableRows
-                            expandableRowsComponent={ExpandedUserDetails}
+                            expandableRowsComponent={ExpandedReviewDetails}
                         />
                     </Paper>
                 )}
 
-            <EditUserDialog
+            <EditReviewDialog
                 open={editDialogOpen}
                 onClose={handleEditDialogClose}
-                rowData={selectedUser}
+                rowData={selectedReview}
             />
         </>
     );
 };
 
-export default AdminUsersScreen;
+export default AdminReviewsScreen;

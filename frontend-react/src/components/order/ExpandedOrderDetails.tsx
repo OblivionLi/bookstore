@@ -1,5 +1,5 @@
 import React from 'react';
-import {ExpanderComponentProps} from "react-data-table-component";
+import {ExpanderComponentProps, TableColumn} from "react-data-table-component";
 import DataRow from "../../types/order/IDataRow";
 import OrderLineItem from "../../types/order/IOrderLineItem";
 import {
@@ -14,8 +14,11 @@ import {
     Paper,
     ListItem, List, Grid
 } from "@mui/material";
+import IOrdersData from "../../types/order/IOrdersData";
 
-const ExpandedOrderDetails: React.FC<ExpanderComponentProps<DataRow>> = ({data}) => {
+type ExpandedOrderDetailsProps = ExpanderComponentProps<IOrdersData>;
+
+const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({data}) => {
     return (
         <Paper elevation={3}
                sx={{padding: 3, marginTop: 3, marginBottom: 3, width: '85%', marginLeft: 'auto', marginRight: 'auto'}}>

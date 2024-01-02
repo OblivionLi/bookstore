@@ -5,7 +5,7 @@ import com.balaur.bookstore.backend.model.payment.Payment;
 import com.balaur.bookstore.backend.model.payment.PaymentHistory;
 import com.balaur.bookstore.backend.model.payment.PaymentHistoryRepository;
 import com.balaur.bookstore.backend.model.user.User;
-import com.balaur.bookstore.backend.repository.OrderRepository;
+import com.balaur.bookstore.backend.repository.order.OrderRepository;
 import com.balaur.bookstore.backend.repository.payment.PaymentRepository;
 import com.balaur.bookstore.backend.repository.user.UserRepository;
 import com.balaur.bookstore.backend.request.payment.ChargePaymentRequest;

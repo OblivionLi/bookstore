@@ -1,19 +1,21 @@
-package com.balaur.bookstore.backend.response.book;
+package com.balaur.bookstore.backend.response.admin.book;
 
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class BookReviewResponse {
+public class ReviewsResponse {
     private Long id;
-    private String username;
+    private Long bookId;
+    private String bookTitle;
+    private String userEmail;
     private Integer rating;
     private String review;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

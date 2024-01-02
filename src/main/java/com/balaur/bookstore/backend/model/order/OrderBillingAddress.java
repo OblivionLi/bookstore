@@ -24,4 +24,8 @@ public class OrderBillingAddress {
     private String phoneNumber;
     private String zipcode;
     private String billingName;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 }

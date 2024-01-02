@@ -22,13 +22,13 @@ const OrderHistoryScreen = () => {
     const [orders, setOrders] = useState<IOrdersData[]>([]);
     const [loading, setLoading] = useState(true);
     const [openPay, setOpenPay] = useState(false);
-    const [selectedRow, setSelectedRow] = useState<DataRow | null>(null);
+    const [selectedRow, setSelectedRow] = useState<IOrdersData | null>(null);
 
     useEffect(() => {
         fetchOrders();
     }, []);
 
-    const columns: TableColumn<DataRow>[] = [
+    const columns: TableColumn<IOrdersData>[] = [
         {
             name: 'OrderId',
             selector: row => row.id,
@@ -41,7 +41,7 @@ const OrderHistoryScreen = () => {
         },
         {
             name: 'Order Status',
-            cell: (row: DataRow) => (
+            cell: (row: IOrdersData) => (
                 <Chip
                     label={row?.orderStatus}
                     style={{
@@ -54,7 +54,7 @@ const OrderHistoryScreen = () => {
         },
         {
             name: 'Payment Status',
-            cell: (row: DataRow) => (
+            cell: (row: IOrdersData) => (
                 <Chip
                     label={row?.paymentStatus}
                     style={{
@@ -82,7 +82,7 @@ const OrderHistoryScreen = () => {
         },
         {
             name: 'Options',
-            cell: (row: DataRow) => (
+            cell: (row: IOrdersData) => (
                 <Box sx={{ mt: 1, mb: 1, display: 'flex', flexDirection: 'column', gap: '8px'}}>
                     <Button
                         variant="contained"
@@ -108,12 +108,12 @@ const OrderHistoryScreen = () => {
         }
     ];
 
-    const handlePay = (row: DataRow) => {
+    const handlePay = (row: IOrdersData) => {
         setOpenPay(true);
         setSelectedRow(row);
     }
 
-    const handleShow = (row: DataRow) => {
+    const handleShow = (row: IOrdersData) => {
         navigate(`/order/${row.id}`);
     }
 
@@ -127,24 +127,6 @@ const OrderHistoryScreen = () => {
                 console.log(e);
             });
     };
-
-    const mapOrdersToDataRow = (orders: IOrdersData[]): DataRow[] => {
-        return orders.map((order) => ({
-            id: order.id,
-            orderDate: order.orderDate,
-            taxAmount: order.taxAmount,
-            shippingCost: order.shippingCost,
-            totalPrice: order.totalPrice.toFixed(2),
-            orderStatus: order.orderStatus,
-            notes: order.notes,
-            orderShippingAddress: order.orderShippingAddress,
-            orderBillingAddress: order.orderBillingAddress,
-            orderLineItems: order.orderLineItems,
-            paymentStatus: order.paymentStatus
-        }));
-    };
-
-    const data: DataRow[] = mapOrdersToDataRow(orders);
 
     const handlePaymentSuccess = () => {
         setOpenPay(false);
@@ -186,7 +168,7 @@ const OrderHistoryScreen = () => {
                             <DataTable
                                 title="Order History"
                                 columns={columns}
-                                data={data}
+                                data={orders}
                                 pagination
                                 expandableRows
                                 expandableRowsComponent={ExpandedOrderDetails}

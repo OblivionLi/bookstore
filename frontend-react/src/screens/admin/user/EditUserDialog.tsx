@@ -5,15 +5,13 @@ import {
     DialogContent,
     DialogTitle,
     Divider,
-    FormControl,
     InputLabel,
     Paper,
-    Select, SelectChangeEvent,
+    SelectChangeEvent,
     TextField
 } from "@mui/material";
 import IUserEditModalProps from "../../../types/user/IUserEditModalProps";
 import UsersService from "../../../services/UsersService";
-import MenuItem from "@mui/material/MenuItem";
 import IUsersRolesResponse from "../../../types/user/IUsersRolesResponse";
 import IUserEditRequest from "../../../types/user/IUserEditRequest";
 
@@ -63,8 +61,6 @@ const EditUserDialog:React.FC<IUserEditModalProps> = ({ open, onClose, rowData }
 
     const editUser = (userNewData: IUserEditRequest) => {
         UsersService.editUser(userNewData)
-            .then((response: any) => {
-            })
             .catch((e: any) => {
                 if (e.response) {
                     const errorData = e.response.data;
@@ -90,10 +86,6 @@ const EditUserDialog:React.FC<IUserEditModalProps> = ({ open, onClose, rowData }
         })
     }
 
-    const handleMultiSelectChange = (event: SelectChangeEvent<string[]>, child: React.ReactNode) => {
-        setSelectedRoles(event.target.value as string[]);
-    };
-
     const handleChipClick = (role: string) => {
         if (selectedRoles.includes(role)) {
             setSelectedRoles(selectedRoles.filter((r) => r !== role));
@@ -115,7 +107,7 @@ const EditUserDialog:React.FC<IUserEditModalProps> = ({ open, onClose, rowData }
                             fullWidth
                             id="email"
                             label="Email"
-                            value={rowData?.email || ''}
+                            defaultValue={rowData?.email || ''}
                             onChange={handleChange}
                             error={Boolean(validationMessages.email)}
                             helperText={validationMessages.email}

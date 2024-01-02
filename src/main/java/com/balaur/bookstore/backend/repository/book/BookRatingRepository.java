@@ -1,4 +1,4 @@
-package com.balaur.bookstore.backend.repository;
+package com.balaur.bookstore.backend.repository.book;
 
 import com.balaur.bookstore.backend.model.book.BookRating;
 import com.balaur.bookstore.backend.model.user.User;

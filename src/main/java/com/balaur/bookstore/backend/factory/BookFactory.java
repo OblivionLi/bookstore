@@ -95,7 +95,9 @@ public class BookFactory {
         book.setAuthors((List<String>) mappedAttributes.get("authors"));
         book.setGenres((List<BookGenres>) mappedAttributes.get("genres"));
         book.setReleaseDate((Date) mappedAttributes.get("releaseDate"));
+        book.setDeleted(false);
 
+        System.out.println(book);
         String slug = book.getTitle().toLowerCase().replace(" ", "-");
         book.setSlug(slug);
     }

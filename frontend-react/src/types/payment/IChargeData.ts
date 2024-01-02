@@ -4,7 +4,7 @@ export default interface IChargeData {
     chargeId: string | undefined;
     paymentMethod: string | undefined;
     chargeBillingAddress: IChargeBillingAddress | null;
-    chargeTotal: string | undefined;
+    chargeTotal: number | undefined;
     orderId: number | undefined;
     userEmail: string | null;
 }

@@ -7,12 +7,13 @@ import com.balaur.bookstore.backend.model.order.OrderBillingAddress;
 import com.balaur.bookstore.backend.model.order.OrderLineItem;
 import com.balaur.bookstore.backend.model.order.OrderShippingAddress;
 import com.balaur.bookstore.backend.model.user.User;
-import com.balaur.bookstore.backend.repository.*;
+import com.balaur.bookstore.backend.repository.book.BookRepository;
+import com.balaur.bookstore.backend.repository.order.OrderBillingAddressRepository;
+import com.balaur.bookstore.backend.repository.order.OrderLineItemRepository;
+import com.balaur.bookstore.backend.repository.order.OrderRepository;
+import com.balaur.bookstore.backend.repository.order.OrderShippingAddressRepository;
 import com.balaur.bookstore.backend.repository.user.UserRepository;
-import com.balaur.bookstore.backend.request.order.OrderItemRequest;
-import com.balaur.bookstore.backend.request.order.PlaceOrderRequest;
-import com.balaur.bookstore.backend.request.order.UserBillingAddressRequest;
-import com.balaur.bookstore.backend.request.order.UserShippingAddressRequest;
+import com.balaur.bookstore.backend.request.order.*;
 import com.balaur.bookstore.backend.response.order.OrderLineItemResponse;
 import com.balaur.bookstore.backend.response.order.OrderResponse;
 import com.balaur.bookstore.backend.response.order.PlaceOrderResponse;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -50,12 +52,12 @@ public class OrderService {
         User user = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
 
         if (user == null) {
-            log.warn("[UserService] " + new Date() + " | User: " + authentication.getName() + " not found.");
+            log.warn("[OrderService] " + new Date() + " | User: " + authentication.getName() + " not found.");
             throw new UsernameNotFoundException("User: " + authentication.getName() + " not found.");
         }
 
         if (request.getOrderItems().isEmpty()) {
-            log.warn("[UserService] " + new Date() + " | Can't place an order with no order line items.");
+            log.warn("[OrderService] " + new Date() + " | Can't place an order with no order line items.");
             throw new RuntimeException("Can't place an order with no order line items.");
         }
 
@@ -92,7 +94,8 @@ public class OrderService {
 
         OrderBillingAddress orderBillingAddress = getMappedOrderBillingAddress(request.getUserBillingAddress());
         newOrder.setOrderBillingAddress(orderBillingAddress);
-
+        newOrder.setCreatedAt(LocalDateTime.now());
+        newOrder.setUpdatedAt(LocalDateTime.now());
         try {
             orderRepository.save(newOrder);
 
@@ -115,7 +118,7 @@ public class OrderService {
                                     .build()
                     );
         } catch (Exception ex) {
-            log.warn("[UserService] " + new Date() + " | Couldn't place order. Error: " + ex.getMessage());
+            log.warn("[OrderService] " + new Date() + " | Couldn't place order. Error: " + ex.getMessage());
             throw new RuntimeException("Couldn't place order. Error: " + ex.getMessage());
         }
     }
@@ -162,8 +165,15 @@ public class OrderService {
             OrderLineItem orderLineItem = new OrderLineItem();
             Book book = bookRepository.findBookById(orderItemRequest.getItemId());
 
-            orderLineItem.setBook(book);
+//            orderLineItem.setBook(book);
             orderLineItem.setOrder(newOrder);
+            orderLineItem.setTitle(book.getTitle());
+
+            if (book instanceof NormalBook) {
+                orderLineItem.setType("physical");
+            } else {
+                orderLineItem.setType("virtual");
+            }
 
             double orderLineItemTotal;
             if (book instanceof NormalBook) {
@@ -189,13 +199,13 @@ public class OrderService {
         User user = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
 
         if (user == null) {
-            log.warn("[UserService] " + new Date() + " | User: " + authentication.getName() + " not found.");
+            log.warn("[OrderService] " + new Date() + " | User: " + authentication.getName() + " not found.");
             throw new UsernameNotFoundException("User: " + authentication.getName() + " not found.");
         }
 
         List<Order> orders = orderRepository.findByUser(user);
         if (orders.isEmpty()) {
-            log.warn("[UserService] " + new Date() + " | User didn't place any order as of yet.");
+            log.warn("[OrderService] " + new Date() + " | User didn't place any order as of yet.");
             return null;
         }
 
@@ -213,11 +223,11 @@ public class OrderService {
             orderLineItemResponses.add(
                     OrderLineItemResponse.builder()
                             .id(orderLineItem.getOrder().getId())
-                            .bookTitle(orderLineItem.getBook().getTitle())
+                            .bookTitle(orderLineItem.getTitle())
                             .pricePerUnit(orderLineItem.getPricePerUnit())
                             .totalPrice(orderLineItem.getTotalPrice())
                             .discount(orderLineItem.getDiscount())
-                            .bookType(getLineItemType(orderLineItem))
+                            .bookType(orderLineItem.getType())
                             .quantity(orderLineItem.getQuantity())
                             .build()
             );
@@ -239,36 +249,101 @@ public class OrderService {
                 .orderShippingAddress(order.getOrderShippingAddress())
                 .orderBillingAddress(order.getOrderBillingAddress())
                 .orderLineItems(orderLineItemResponses)
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
                 .build();
     }
-
-    private String getLineItemType(OrderLineItem orderLineItem) {
-        if (orderLineItem.getBook() instanceof NormalBook) {
-            return "physical";
-        }
-        return "virtual";
-    }
-
 
     public void deleteOrders() {
         orderRepository.deleteAll();
     }
 
     public ResponseEntity<OrderResponse> getOrder(Authentication authentication, Long id) {
-        User user = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
+        User authenticatedUser = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
 
-        if (user == null) {
-            log.warn("[UserService] " + new Date() + " | User: " + authentication.getName() + " not found.");
+        if (authenticatedUser == null) {
+            log.warn("[OrderService] " + new Date() + " | User: " + authentication.getName() + " not found.");
             throw new UsernameNotFoundException("User: " + authentication.getName() + " not found.");
         }
 
         Optional<Order> order = orderRepository.findById(id);
         if (order.isEmpty()) {
-            log.warn("[UserService] " + new Date() + " | Couldn't find order.");
+            log.warn("[OrderService] " + new Date() + " | Couldn't find order.");
             return null;
         }
 
         OrderResponse orderResponse = getMappedOrderResponse(order.get());
         return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
+    }
+
+    public ResponseEntity<List<OrderResponse>> getAllOrders(Authentication authentication) {
+        User authenticatedUser = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
+
+        if (authenticatedUser == null) {
+            log.warn("[OrderService] " + new Date() + " | User: " + authentication.getName() + " not found.");
+            throw new UsernameNotFoundException("User: " + authentication.getName() + " not found.");
+        }
+
+        List<Order> orders = orderRepository.findAll();
+        if (orders.isEmpty()) {
+            log.warn("[OrderService] " + new Date() + " | No orders found.");
+            return null;
+        }
+
+        List<OrderResponse> orderResponses = new ArrayList<>();
+        for (Order order : orders) {
+            orderResponses.add(getMappedOrderResponse(order));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(orderResponses);
+    }
+
+    public ResponseEntity<String> deleteOrder(Authentication authentication, Long id) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[OrderService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        Optional<Order> orderToBeDeleted = orderRepository.findById(id);
+        if (orderToBeDeleted.isEmpty()) {
+            log.warn("[OrderService] " + new Date() + " | User to be deleted not found.");
+            throw new UsernameNotFoundException("User to be deleted not found.");
+        }
+
+        // Disassociate the Order from the User
+        orderToBeDeleted.get().setUser(null);
+
+        // Remove the association between Order and addresses
+        orderToBeDeleted.get().setOrderBillingAddress(null);
+        orderToBeDeleted.get().setOrderShippingAddress(null);
+
+        orderRepository.delete(orderToBeDeleted.get());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Order deleted with success.");
+    }
+
+    public ResponseEntity<String> editOrder(Authentication authentication, Long id, OrderEditRequest request) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[OrderService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        Optional<Order> orderToBeEdited = orderRepository.findById(id);
+        if (orderToBeEdited.isEmpty()) {
+            log.warn("[OrderService] " + new Date() + " | User to be deleted not found.");
+            throw new UsernameNotFoundException("User to be deleted not found.");
+        }
+
+        OrderStatus orderStatus = OrderStatus.fromString(request.getOrderStatus());
+        orderToBeEdited.get().setStatus(orderStatus);
+
+        PaymentStatus paymentStatus = PaymentStatus.fromString(request.getPaymentStatus());
+        orderToBeEdited.get().setPaymentStatus(paymentStatus);
+
+        orderRepository.save(orderToBeEdited.get());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Order updated with success.");
     }
 }

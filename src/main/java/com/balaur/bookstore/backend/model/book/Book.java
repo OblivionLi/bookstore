@@ -31,6 +31,9 @@ public class Book {
     private String publisher;
     private String description;
 
+    @Column(name = "deleted")
+    private boolean deleted;
+
     @ElementCollection
     private List<String> authors;
 

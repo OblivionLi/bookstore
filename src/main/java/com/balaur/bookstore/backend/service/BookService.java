@@ -1,14 +1,16 @@
 package com.balaur.bookstore.backend.service;
 
 import com.balaur.bookstore.backend.dto.BookDto;
+import com.balaur.bookstore.backend.request.book.ReviewRequest;
+import com.balaur.bookstore.backend.response.admin.book.ReviewsResponse;
 import com.balaur.bookstore.backend.response.rating.RatingResponse;
 import com.balaur.bookstore.backend.response.user.UserDetailsResponse;
 import com.balaur.bookstore.backend.exception.book.*;
 import com.balaur.bookstore.backend.factory.BookFactory;
 import com.balaur.bookstore.backend.model.book.*;
 import com.balaur.bookstore.backend.model.user.User;
-import com.balaur.bookstore.backend.repository.BookRatingRepository;
-import com.balaur.bookstore.backend.repository.BookRepository;
+import com.balaur.bookstore.backend.repository.book.BookRatingRepository;
+import com.balaur.bookstore.backend.repository.book.BookRepository;
 import com.balaur.bookstore.backend.repository.user.UserRepository;
 import com.balaur.bookstore.backend.request.book.BookCreateRequest;
 import com.balaur.bookstore.backend.request.book.BookEditRequest;
@@ -88,22 +90,6 @@ public class BookService {
         }
     }
 
-    public String deleteBook(Long id) {
-        Book book = bookRepository.findBookById(id);
-        if (book == null) {
-            log.warn("[BookService] " + new Date() + " | Book with id " + id + " not found.");
-            throw new BookNotFoundException("Book with id " + id + " not found.");
-        }
-
-        try {
-            bookRepository.delete(book);
-            return "Book deleted successfully.";
-        } catch (Exception ex) {
-            log.error("[BookService] " + new Date() + " | Couldn't delete book with id: " + id + " because of the following error: " + ex.getMessage());
-            throw ex;
-        }
-    }
-
     public ResponseEntity<BookResponse> getBook(String slug) {
         Book book = bookRepository.findBookBySlug(slug);
         if (book == null) {
@@ -117,7 +103,7 @@ public class BookService {
     }
 
     public ResponseEntity<Page<BookResponse>> getAllBooks(int page, int size) {
-        Page<Book> books = bookRepository.findAll(PageRequest.of(page, size));
+        Page<Book> books = bookRepository.findByDeletedFalse(PageRequest.of(page, size));
         if (books.isEmpty()) {
             log.warn("[BookService] " + new Date() + " | No books found.");
             throw new BookNotFoundException("No books found.");
@@ -281,5 +267,112 @@ public class BookService {
                 .username(bookRating.getUser().getEmail())
                 .createdAt(bookRating.getCreatedAt())
                 .build();
+    }
+
+    public ResponseEntity<List<BookResponse>> getAllOrdersNoPagination(Authentication authentication) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[BookService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        List<Book> books = bookRepository.findByDeletedFalse();
+        if (books.isEmpty()) {
+            log.warn("[BookService] " + new Date() + " | No books found.");
+            throw new BookNotFoundException("No books found.");
+        }
+
+        List<BookResponse> response = books.stream()
+                .map(this::mapBookResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Transactional
+    public ResponseEntity<String> deleteBook(Authentication authentication, Long id) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[BookService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        Book book = bookRepository.findBookById(id);
+        if (book == null) {
+            log.warn("[BookService] " + new Date() + " | Book with id " + id + " not found.");
+            throw new BookNotFoundException("Book with id " + id + " not found.");
+        }
+
+        try {
+            book.setDeleted(true);
+            bookRepository.delete(book);
+            return ResponseEntity.status(HttpStatus.OK).body("Book deleted successfully.");
+        } catch (Exception ex) {
+            log.error("[BookService] " + new Date() + " | Couldn't delete book with id: " + id + " because of the following error: " + ex.getMessage());
+            throw ex;
+        }
+    }
+
+    public ResponseEntity<List<ReviewsResponse>> getAllReviews(Authentication authentication) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[BookService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        List<BookRating> reviews = bookRatingRepository.findAll();
+        List<ReviewsResponse> reviewsResponses = new ArrayList<>();
+        for (BookRating review : reviews) {
+            reviewsResponses.add(
+                ReviewsResponse.builder()
+                        .id(review.getId())
+                        .bookId(review.getBook().getId())
+                        .bookTitle(review.getBook().getTitle())
+                        .userEmail(review.getUser().getEmail())
+                        .rating(review.getRating())
+                        .review(review.getReview())
+                        .createdAt(review.getCreatedAt())
+                        .updatedAt(review.getUpdatedAt())
+                        .build()
+            );
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(reviewsResponses);
+    }
+
+    public ResponseEntity<String> deleteReview(Authentication authentication, Long id) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[BookService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        Optional<BookRating> bookRating = bookRatingRepository.findById(id);
+        if (bookRating.isEmpty()) {
+            log.warn("[BookService] " + new Date() + " | Book rating with id " + id + " not found.");
+            throw new BookNotFoundException("Book rating with id " + id + " not found.");
+        }
+
+        bookRatingRepository.delete(bookRating.get());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Review deleted with success.");
+    }
+
+    public ResponseEntity<String> editReview(Authentication authentication, Long id, ReviewRequest request) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[BookService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        Optional<BookRating> bookRating = bookRatingRepository.findById(id);
+        if (bookRating.isEmpty()) {
+            log.warn("[BookService] " + new Date() + " | Book rating with id " + id + " not found.");
+            throw new BookNotFoundException("Book rating with id " + id + " not found.");
+        }
+
+        bookRating.get().setReview(request.getReview());
+        bookRatingRepository.save(bookRating.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Review edited with success.");
     }
 }

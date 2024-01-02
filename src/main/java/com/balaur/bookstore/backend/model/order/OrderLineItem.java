@@ -16,24 +16,13 @@ public class OrderLineItem {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book book;
+//    @ManyToOne(cascade = {CascadeType.DETACH})
+//    @JoinColumn(name = "book_id")
+//    private Book book;
+    private String title;
+    private String type;
     private int quantity;
     private double pricePerUnit;
     private double totalPrice;
     private int discount;
-
-    @Override
-    public String toString() {
-        return "OrderLineItem{" +
-                "id=" + id +
-                ", order=" + order +
-                ", book=" + book +
-                ", quantity=" + quantity +
-                ", pricePerUnit=" + pricePerUnit +
-                ", totalPrice=" + totalPrice +
-                ", discount=" + discount +
-                '}';
-    }
 }

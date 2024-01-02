@@ -1,4 +1,4 @@
-package com.balaur.bookstore.backend.repository;
+package com.balaur.bookstore.backend.repository.order;
 
 import com.balaur.bookstore.backend.model.order.OrderShippingAddress;
 import org.springframework.data.jpa.repository.JpaRepository;

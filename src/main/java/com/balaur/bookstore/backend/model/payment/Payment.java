@@ -30,7 +30,7 @@ public class Payment {
     private String paymentMethod;
     private String transactionId;
     private String currency;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "payment")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentHistory> paymentHistories;
     @ManyToOne
     @JoinColumn(name = "order_id")

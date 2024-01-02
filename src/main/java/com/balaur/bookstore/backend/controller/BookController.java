@@ -29,11 +29,6 @@ public class BookController {
         return bookService.editBook(id, request);
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable Long id) {
-        return bookService.deleteBook(id);
-    }
-
     @GetMapping("/{slug}")
     public ResponseEntity<BookResponse> getBook(@PathVariable String slug) {
         return bookService.getBook(slug);

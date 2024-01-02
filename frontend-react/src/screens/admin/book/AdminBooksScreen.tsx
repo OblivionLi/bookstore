@@ -1,31 +1,25 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
+import IBooksData from "../../../types/book/IBooksData";
+import BooksService from "../../../services/BooksService";
+import {Button, Chip, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
 import DataTable, {TableColumn} from "react-data-table-component";
-import UsersService from "../../../services/UsersService";
 import Box from "@mui/material/Box";
-import IUserResponse from "../../../types/user/IUserResponse";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import ExpandedUserDetails from "../../../components/user/ExpandedUserDetails";
-import EditUserDialog from "./EditUserDialog";
-import UtilsService from "../../../services/UtilsService";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandedBookDetails from "./ExpandedBookDetails";
 
-const AdminUsersScreen = () => {
-    const [users, setUsers] = useState<IUserResponse[]>([]);
+const AdminBooksScreen = () => {
+    const [books, setBooks] = useState<IBooksData[]>([]);
     const [loading, setLoading] = useState(true);
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<IUserResponse | null>(null);
 
     useEffect(() => {
-        fetchUsers();
+        fetchBooks();
     }, []);
 
-    const fetchUsers = () => {
-        UsersService.getAllUsers()
+    const fetchBooks = () => {
+        BooksService.getAllBooksNoPagination()
             .then((response: any) => {
-                setUsers(response.data as IUserResponse[])
+                setBooks(response.data as IBooksData[])
                 setLoading(false);
             })
             .catch((e: Error) => {
@@ -33,21 +27,13 @@ const AdminUsersScreen = () => {
             });
     };
 
-    const DateCell = ({row, selector}: { row: IUserResponse; selector: (row: IUserResponse) => Date }) => {
-        return (
-            <Tooltip title={UtilsService.formatDate(selector(row))} arrow>
-                <Typography variant="body2" noWrap>{UtilsService.formatDate(selector(row))}</Typography>
-            </Tooltip>
-        );
-    };
-
     const createTooltipColumn = (
         name: string,
-        selector: (row: IUserResponse) => string
-    ): TableColumn<IUserResponse> => {
+        selector: (row: IBooksData) => string
+    ): TableColumn<IBooksData> => {
         return {
             name,
-            cell: (row: IUserResponse) => (
+            cell: (row: IBooksData) => (
                 <Tooltip title={selector(row)} arrow>
                     <Typography variant="body2" noWrap>
                         {selector(row)}
@@ -58,46 +44,67 @@ const AdminUsersScreen = () => {
         };
     };
 
-    const columns: TableColumn<IUserResponse>[] = [
+    const columns: TableColumn<IBooksData>[] = [
         {
-            name: 'User ID',
+            name: 'Book ID',
             selector: row => row.id,
             sortable: true,
         },
-        createTooltipColumn('First Name', (row) => row.firstName),
-        createTooltipColumn('Last Name', (row) => row.lastName),
-        createTooltipColumn('Email', (row) => row.email),
         {
-            name: 'Roles',
-            cell: (row: IUserResponse) => (
-                <Tooltip title={row.userGroupCodes.join(', ')} arrow>
-                    <Typography variant="body2" noWrap>{row.userGroupCodes.join(', ')}</Typography>
-                </Tooltip>
-            ),
+            name: 'Title',
+            selector: row => row.title,
             sortable: true,
         },
         {
-            name: 'Is Locked?',
-            selector: row => row.locked ? "true" : "false",
+            name: 'Type',
+            selector: row => row.type,
             sortable: true,
         },
         {
-            name: 'Book Ratings Count',
-            selector: row => row.bookRatings,
+            name: 'File Format',
+            selector: row => row.fileFormat ?? "physical",
+            sortable: true,
+        },
+        createTooltipColumn('ISBN', (row) => row.isbn),
+        {
+            name: 'Quantity',
+            selector: row => row.type === "physical" ? row.quantity : "virtual",
+            sortable: true,
+        },
+        createTooltipColumn('ISBN', (row) => row.publisher),
+        {
+            name: 'Publication Year',
+            selector: row => row.publicationYear,
             sortable: true,
         },
         {
-            name: 'Created At',
-            cell: (row: IUserResponse) => <DateCell row={row} selector={(row) => new Date(row.createdAt)}/>,
+            name: 'Discount (%)',
+            selector: row => row.discount,
             sortable: true,
-        }, {
-            name: 'Updated At',
-            cell: (row: IUserResponse) => <DateCell row={row} selector={(row) => new Date(row.updatedAt)}/>,
+        },
+        {
+            name: 'Price (euro)',
+            selector: row => row.price,
+            sortable: true,
+        },
+        {
+            name: 'Release Date',
+            selector: row => row.releaseDate,
+            sortable: true,
+        },
+        {
+            name: 'Ratings Count',
+            selector: row => row.ratings.length,
+            sortable: true,
+        },
+        {
+            name: 'Rating Average',
+            selector: row => row.averageBookRating,
             sortable: true,
         },
         {
             name: 'Options',
-            cell: (row: IUserResponse) => (
+            cell: (row: IBooksData) => (
                 <Box sx={{mt: 1, mb: 1, display: 'flex', flexDirection: 'column', gap: '8px'}}>
                     <Button
                         variant="contained"
@@ -117,55 +124,32 @@ const AdminUsersScreen = () => {
                     >
                         Delete
                     </Button>
-                    <Button
-                        variant="contained"
-                        color={row.locked ? 'secondary' : 'primary'}
-                        onClick={() => handleToggleLock(row, !row.locked)}
-                        size="small"
-                        startIcon={row.locked ? <LockOpenIcon/> : <LockIcon/>}
-                    >
-                        {row.locked ? 'Unlock' : 'Lock'}
-                    </Button>
                 </Box>
             ),
+            style: {
+                minWidth: '140px',
+            },
         }
     ];
 
-    const handleEdit = (row: IUserResponse) => {
-        setEditDialogOpen(true);
-        setSelectedUser(row);
+    const handleEdit = (row: IBooksData) => {
+
     }
 
-    const handleEditDialogClose = () => {
-        setEditDialogOpen(false);
-        setSelectedUser(null);
-        fetchUsers();
-    }
-
-    const handleToggleLock = (row: IUserResponse, newLockValue: boolean) => {
-        UsersService.lockUser(row.id, newLockValue)
+    const handleDelete = (row: IBooksData) => {
+        BooksService.deleteBook(row.id)
             .then((response: any) => {
-                fetchUsers()
+                fetchBooks()
             })
             .catch((e: Error) => {
                 console.log(e);
-            });
-    }
-
-    const handleDelete = (row: IUserResponse) => {
-        UsersService.deleteUser(row.id)
-            .then((response: any) => {
-                fetchUsers()
             })
-            .catch((e: Error) => {
-                console.log(e);
-            });
     }
 
     return (
         <>
             <Typography variant={"h4"} gutterBottom>
-                Users
+                Books
                 <Typography variant="overline" display="block" gutterBottom>
                     For columns with cut value, hover over with your cursor to view the full value.
                 </Typography>
@@ -196,27 +180,27 @@ const AdminUsersScreen = () => {
                         ))}
                     </Box>
                 ) : (
-
                     <Paper elevation={3}
                            sx={{padding: 3, marginTop: 3, marginLeft: 'auto', marginRight: 'auto'}}>
 
                         <DataTable
+                            key={books.length}
                             columns={columns}
-                            data={users}
+                            data={books}
                             pagination
                             expandableRows
-                            expandableRowsComponent={ExpandedUserDetails}
+                            expandableRowsComponent={ExpandedBookDetails}
                         />
                     </Paper>
                 )}
 
-            <EditUserDialog
-                open={editDialogOpen}
-                onClose={handleEditDialogClose}
-                rowData={selectedUser}
-            />
+            {/*<EditOrderDialog*/}
+            {/*    open={editDialogOpen}*/}
+            {/*    onClose={handleEditDialogClose}*/}
+            {/*    rowData={selectedOrder}*/}
+            {/*/>*/}
         </>
     );
 };
 
-export default AdminUsersScreen;
+export default AdminBooksScreen;

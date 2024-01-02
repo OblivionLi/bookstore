@@ -1,31 +1,30 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
+import OrdersService from "../../../services/OrdersService";
+import IOrdersData from "../../../types/order/IOrdersData";
+import {Button, Chip, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
 import DataTable, {TableColumn} from "react-data-table-component";
-import UsersService from "../../../services/UsersService";
 import Box from "@mui/material/Box";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandedOrderDetails from "../../../components/order/ExpandedOrderDetails";
 import IUserResponse from "../../../types/user/IUserResponse";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import ExpandedUserDetails from "../../../components/user/ExpandedUserDetails";
-import EditUserDialog from "./EditUserDialog";
+import EditOrderDialog from "./EditOrderDialog";
 import UtilsService from "../../../services/UtilsService";
 
-const AdminUsersScreen = () => {
-    const [users, setUsers] = useState<IUserResponse[]>([]);
+const AdminOrdersScreen = () => {
+    const [orders, setOrders] = useState<IOrdersData[]>([]);
     const [loading, setLoading] = useState(true);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<IUserResponse | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<IOrdersData | null>(null);
 
     useEffect(() => {
-        fetchUsers();
+        fetchOrders();
     }, []);
 
-    const fetchUsers = () => {
-        UsersService.getAllUsers()
+    const fetchOrders = () => {
+        OrdersService.getAllOrders()
             .then((response: any) => {
-                setUsers(response.data as IUserResponse[])
+                setOrders(response.data as IOrdersData[])
                 setLoading(false);
             })
             .catch((e: Error) => {
@@ -33,7 +32,7 @@ const AdminUsersScreen = () => {
             });
     };
 
-    const DateCell = ({row, selector}: { row: IUserResponse; selector: (row: IUserResponse) => Date }) => {
+    const DateCell = ({row, selector}: { row: IOrdersData; selector: (row: IOrdersData) => Date }) => {
         return (
             <Tooltip title={UtilsService.formatDate(selector(row))} arrow>
                 <Typography variant="body2" noWrap>{UtilsService.formatDate(selector(row))}</Typography>
@@ -41,63 +40,70 @@ const AdminUsersScreen = () => {
         );
     };
 
-    const createTooltipColumn = (
-        name: string,
-        selector: (row: IUserResponse) => string
-    ): TableColumn<IUserResponse> => {
-        return {
-            name,
-            cell: (row: IUserResponse) => (
-                <Tooltip title={selector(row)} arrow>
-                    <Typography variant="body2" noWrap>
-                        {selector(row)}
-                    </Typography>
-                </Tooltip>
-            ),
-            sortable: true,
-        };
-    };
-
-    const columns: TableColumn<IUserResponse>[] = [
+    const columns: TableColumn<IOrdersData>[] = [
         {
-            name: 'User ID',
-            selector: row => row.id,
+            name: 'Order ID',
+            selector: row => row.orderId ?? "not provided",
             sortable: true,
         },
-        createTooltipColumn('First Name', (row) => row.firstName),
-        createTooltipColumn('Last Name', (row) => row.lastName),
-        createTooltipColumn('Email', (row) => row.email),
         {
-            name: 'Roles',
-            cell: (row: IUserResponse) => (
-                <Tooltip title={row.userGroupCodes.join(', ')} arrow>
-                    <Typography variant="body2" noWrap>{row.userGroupCodes.join(', ')}</Typography>
-                </Tooltip>
+            name: 'Order Status',
+            cell: (row: IOrdersData) => (
+                <Chip
+                    label={row?.orderStatus}
+                    style={{
+                        backgroundColor: row?.orderStatus === 'Completed' ? 'green' : 'default',
+                        color: row?.orderStatus === 'Completed' ? 'white' : 'black'
+                    }}
+                />
             ),
             sortable: true,
         },
         {
-            name: 'Is Locked?',
-            selector: row => row.locked ? "true" : "false",
+            name: 'Payment Status',
+            cell: (row: IOrdersData) => (
+                <Chip
+                    label={row?.paymentStatus}
+                    style={{
+                        backgroundColor: row?.paymentStatus === 'Payed' ? 'green' : 'default',
+                        color: row?.paymentStatus === 'Payed' ? 'white' : 'black'
+                    }}
+                />
+            ),
             sortable: true,
         },
         {
-            name: 'Book Ratings Count',
-            selector: row => row.bookRatings,
+            name: 'Shipping cost (euro)',
+            selector: row => row.shippingCost,
+            sortable: true,
+        },
+        {
+            name: 'Tax Amount (euro)',
+            selector: row => row.taxAmount,
+            sortable: true,
+        },
+        {
+            name: 'Subtotal (euro)',
+            selector: row => row.subtotal,
+            sortable: true,
+        },
+        {
+            name: 'Total (euro)',
+            selector: row => row.totalPrice.toFixed(2),
             sortable: true,
         },
         {
             name: 'Created At',
-            cell: (row: IUserResponse) => <DateCell row={row} selector={(row) => new Date(row.createdAt)}/>,
+            cell: (row: IOrdersData) => <DateCell row={row} selector={(row) => new Date(row.createdAt)}/>,
             sortable: true,
         }, {
             name: 'Updated At',
-            cell: (row: IUserResponse) => <DateCell row={row} selector={(row) => new Date(row.updatedAt)}/>,
+            cell: (row: IOrdersData) => <DateCell row={row} selector={(row) => new Date(row.updatedAt)}/>,
             sortable: true,
         },
         {
             name: 'Options',
-            cell: (row: IUserResponse) => (
+            cell: (row: IOrdersData) => (
                 <Box sx={{mt: 1, mb: 1, display: 'flex', flexDirection: 'column', gap: '8px'}}>
                     <Button
                         variant="contained"
@@ -117,55 +123,36 @@ const AdminUsersScreen = () => {
                     >
                         Delete
                     </Button>
-                    <Button
-                        variant="contained"
-                        color={row.locked ? 'secondary' : 'primary'}
-                        onClick={() => handleToggleLock(row, !row.locked)}
-                        size="small"
-                        startIcon={row.locked ? <LockOpenIcon/> : <LockIcon/>}
-                    >
-                        {row.locked ? 'Unlock' : 'Lock'}
-                    </Button>
                 </Box>
             ),
         }
     ];
 
-    const handleEdit = (row: IUserResponse) => {
+    const handleDelete = (row: IOrdersData) => {
+        OrdersService.deleteOrder(row.id)
+            .then((response: any) => {
+                fetchOrders()
+            })
+            .catch((e: Error) => {
+                console.log(e);
+            })
+    }
+
+    const handleEdit = (row: IOrdersData) => {
         setEditDialogOpen(true);
-        setSelectedUser(row);
+        setSelectedOrder(row);
     }
 
     const handleEditDialogClose = () => {
         setEditDialogOpen(false);
-        setSelectedUser(null);
-        fetchUsers();
-    }
-
-    const handleToggleLock = (row: IUserResponse, newLockValue: boolean) => {
-        UsersService.lockUser(row.id, newLockValue)
-            .then((response: any) => {
-                fetchUsers()
-            })
-            .catch((e: Error) => {
-                console.log(e);
-            });
-    }
-
-    const handleDelete = (row: IUserResponse) => {
-        UsersService.deleteUser(row.id)
-            .then((response: any) => {
-                fetchUsers()
-            })
-            .catch((e: Error) => {
-                console.log(e);
-            });
+        setSelectedOrder(null);
+        fetchOrders();
     }
 
     return (
         <>
             <Typography variant={"h4"} gutterBottom>
-                Users
+                Orders
                 <Typography variant="overline" display="block" gutterBottom>
                     For columns with cut value, hover over with your cursor to view the full value.
                 </Typography>
@@ -196,27 +183,27 @@ const AdminUsersScreen = () => {
                         ))}
                     </Box>
                 ) : (
-
                     <Paper elevation={3}
                            sx={{padding: 3, marginTop: 3, marginLeft: 'auto', marginRight: 'auto'}}>
 
                         <DataTable
+                            key={orders.length}
                             columns={columns}
-                            data={users}
+                            data={orders}
                             pagination
                             expandableRows
-                            expandableRowsComponent={ExpandedUserDetails}
+                            expandableRowsComponent={ExpandedOrderDetails}
                         />
                     </Paper>
                 )}
 
-            <EditUserDialog
+            <EditOrderDialog
                 open={editDialogOpen}
                 onClose={handleEditDialogClose}
-                rowData={selectedUser}
+                rowData={selectedOrder}
             />
         </>
     );
 };
 
-export default AdminUsersScreen;
+export default AdminOrdersScreen;

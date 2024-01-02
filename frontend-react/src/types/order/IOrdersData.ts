@@ -16,4 +16,6 @@ export default interface IOrdersData {
     orderShippingAddress: OrderShippingAddress;
     orderBillingAddress: OrderBillingAddress;
     orderLineItems: OrderLineItem[];
+    createdAt: Date;
+    updatedAt: Date;
 }

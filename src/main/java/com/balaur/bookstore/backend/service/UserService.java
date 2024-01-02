@@ -3,10 +3,9 @@ package com.balaur.bookstore.backend.service;
 import com.balaur.bookstore.backend.config.UserAuthenticationProvider;
 import com.balaur.bookstore.backend.dto.UserAddressDto;
 import com.balaur.bookstore.backend.dto.UserAddressMappingDto;
-import com.balaur.bookstore.backend.model.book.BookRating;
 import com.balaur.bookstore.backend.model.email.EmailDetails;
 import com.balaur.bookstore.backend.model.email.EmailServiceImpl;
-import com.balaur.bookstore.backend.repository.BookRatingRepository;
+import com.balaur.bookstore.backend.repository.book.BookRatingRepository;
 import com.balaur.bookstore.backend.repository.user.*;
 import com.balaur.bookstore.backend.response.admin.role.UserRolesResponse;
 import com.balaur.bookstore.backend.response.admin.user.UserResponse;
@@ -36,7 +35,6 @@ import org.springframework.stereotype.Service;
 import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

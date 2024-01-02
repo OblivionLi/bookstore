@@ -14,6 +14,7 @@ import IChargeData from "../../../../types/payment/IChargeData";
 import IChargeBillingAddress from "../../../../types/payment/IChargeBillingAddress";
 import LocalStorageService from "../../../../services/LocalStorageService";
 import ChargeService from "../../../../services/ChargeService";
+import IOrdersData from "../../../../types/order/IOrdersData";
 
 const ElementContainer = styled('div')({
     border: '1px solid lightgray',
@@ -44,7 +45,7 @@ const CARD_OPTIONS = {
 };
 
 interface CheckoutFormProps {
-    selectedRow: DataRow | null;
+    selectedRow: IOrdersData | null;
     setOpenPay: React.Dispatch<React.SetStateAction<boolean>>;
     onPaymentSuccess: () => void;
 }
