@@ -41,7 +41,13 @@ public class BookService {
     private final UserRepository userRepository;
     private final BookRatingRepository bookRatingRepository;
 
-    public ResponseEntity<BookResponse> addBook(BookCreateRequest request) {
+    public ResponseEntity<BookResponse> addBook(Authentication authentication, BookCreateRequest request) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[BookService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
         Book foundBook = bookRepository.findBookByIsbn(request.getIsbn());
         if (foundBook != null) {
             log.warn("[BookService] " + new Date() + " | Book with isbn " + request.getIsbn() + " already exist.");
@@ -69,7 +75,13 @@ public class BookService {
         }
     }
 
-    public ResponseEntity<BookResponse> editBook(Long id, BookEditRequest request) {
+    public ResponseEntity<BookResponse> editBook(Authentication authentication, Long id, BookEditRequest request) {
+        User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
+        if (authenticatedUser == null) {
+            log.warn("[BookService] " + new Date() + " | User not found.");
+            throw new UsernameNotFoundException("User not found.");
+        }
+
         Book book = bookRepository.findBookById(id);
         if (book == null) {
             log.warn("[BookService] " + new Date() + " | Book with id " + id + " not found.");
@@ -189,7 +201,7 @@ public class BookService {
     private BookResponse mapBookResponse(Book book) {
         return BookResponse.builder()
                 .id(book.getId())
-                .type(getBookFileDetails(book).get("type"))
+                .type(getBookSpecificDetails(book).get("type"))
                 .slug(book.getSlug())
                 .title(book.getTitle())
                 .isbn(book.getIsbn())
@@ -202,10 +214,17 @@ public class BookService {
                 .discount(book.getDiscount())
                 .price(book.getPrice())
                 .releaseDate(book.getReleaseDate())
-                .fileFormat(getBookFileDetails(book).get("fileFormat"))
+                .fileFormat(getBookSpecificDetails(book).get("fileFormat"))
                 .ratings(getBookRatingDetails(book.getRatings()))
                 .averageBookRating(getAverageBookRating(book))
                 .quantity(getBookQuantity(book))
+                .createdAt(book.getCreatedAt())
+                .updatedAt(book.getUpdatedAt())
+                .fileSize(getBookSpecificDetails(book).get("fileSize"))
+                .downloadLink(getBookSpecificDetails(book).get("downloadLink"))
+                .duration(getBookSpecificDetails(book).get("duration"))
+                .narrator(getBookSpecificDetails(book).get("narrator"))
+                .coverImage(getBookSpecificDetails(book).get("coverImage"))
                 .build();
     }
 
@@ -230,22 +249,34 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    private HashMap<String, String> getBookFileDetails(Book book) {
-        HashMap<String, String> bookFileDetails = new HashMap<>();
-        bookFileDetails.put("type", null);
-        bookFileDetails.put("fileFormat", null);
+    private HashMap<String, String> getBookSpecificDetails(Book book) {
+        HashMap<String, String> bookSpecificDetails = new HashMap<>();
+        bookSpecificDetails.put("type", null);
+        bookSpecificDetails.put("fileFormat", null);
+        bookSpecificDetails.put("fileSize", null);
+        bookSpecificDetails.put("downloadLink", null);
+        bookSpecificDetails.put("duration", null);
+        bookSpecificDetails.put("narrator", null);
+        bookSpecificDetails.put("coverImage", null);
 
         if (book instanceof NormalBook) {
-            bookFileDetails.put("type", ((NormalBook) book).getBookType());
+            bookSpecificDetails.put("type", ((NormalBook) book).getBookType());
+            bookSpecificDetails.put("coverImage", ((NormalBook) book).getCoverImage());
         } else if (book instanceof EBook) {
-            bookFileDetails.put("type", ((EBook) book).getBookType());
-            bookFileDetails.put("fileFormat", ((EBook) book).getFileFormat().getFormat());
+            bookSpecificDetails.put("type", ((EBook) book).getBookType());
+            bookSpecificDetails.put("fileFormat", ((EBook) book).getFileFormat().getFormat());
+            bookSpecificDetails.put("fileSize", String.valueOf(((EBook) book).getFileSize()));
+            bookSpecificDetails.put("downloadLink", ((EBook) book).getDownloadLink());
         } else if (book instanceof AudioBook) {
-            bookFileDetails.put("type", ((AudioBook) book).getBookType());
-            bookFileDetails.put("fileFormat", ((AudioBook) book).getAudioFormat().getFormat());
+            bookSpecificDetails.put("type", ((AudioBook) book).getBookType());
+            bookSpecificDetails.put("fileFormat", ((AudioBook) book).getAudioFormat().getFormat());
+            bookSpecificDetails.put("fileSize", String.valueOf(((AudioBook) book).getFileSize()));
+            bookSpecificDetails.put("downloadLink", ((AudioBook) book).getDownloadLink());
+            bookSpecificDetails.put("duration", ((AudioBook) book).getDuration());
+            bookSpecificDetails.put("narrator", ((AudioBook) book).getNarrator());
         }
 
-        return bookFileDetails;
+        return bookSpecificDetails;
     }
 
     public ResponseEntity<Page<BookReviewResponse>> getBookReviews(Long bookId, int page, int size) {

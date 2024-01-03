@@ -33,6 +33,42 @@ const ExpandedUserDetails: React.FC<ExpanderComponentProps<IBooksData>> = ({data
                         </List>
                     </Grid>
 
+                    {data?.narrator && (
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom>Narrator: </Typography>
+                            <List>
+                                {data.narrator}
+                            </List>
+                        </Grid>
+                    )}
+
+                    {data?.duration && (
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom>Duration: </Typography>
+                            <List>
+                                {data.duration}
+                            </List>
+                        </Grid>
+                    )}
+
+                    {data?.downloadLink && (
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom>Download link: </Typography>
+                            <List>
+                                {data.downloadLink}
+                            </List>
+                        </Grid>
+                    )}
+
+                    {data?.coverImage && (
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom>Cover Image: </Typography>
+                            <List>
+                                {data.coverImage}
+                            </List>
+                        </Grid>
+                    )}
+
                     <Grid item xs={12} md={6}>
                         <Typography variant="h6" gutterBottom>Description: </Typography>
                         <Typography variant="body2" gutterBottom>{data?.description}</Typography>

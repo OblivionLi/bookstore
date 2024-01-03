@@ -1,5 +1,7 @@
 package com.balaur.bookstore.backend.controller;
 
+import com.balaur.bookstore.backend.request.book.BookCreateRequest;
+import com.balaur.bookstore.backend.request.book.BookEditRequest;
 import com.balaur.bookstore.backend.request.book.ReviewRequest;
 import com.balaur.bookstore.backend.request.order.OrderEditRequest;
 import com.balaur.bookstore.backend.request.user.UserEditRequest;
@@ -77,9 +79,19 @@ public class AdminController {
         return bookService.getAllOrdersNoPagination(authentication);
     }
 
+    @PatchMapping("/books/{id}/edit")
+    public ResponseEntity<BookResponse> editBook(Authentication authentication, @PathVariable Long id, @RequestBody @Valid BookEditRequest request) {
+        return bookService.editBook(authentication, id, request);
+    }
+
     @DeleteMapping("/books/{id}/delete")
     public ResponseEntity<String> deleteBook(Authentication authentication, @PathVariable Long id) {
         return bookService.deleteBook(authentication, id);
+    }
+
+    @PostMapping("/books")
+    public ResponseEntity<BookResponse> addBook(Authentication authentication, @RequestBody @Valid BookCreateRequest request) {
+        return bookService.addBook(authentication, request);
     }
 
     // ============= Reviews routes

@@ -3,6 +3,8 @@ import IBooksData from "../types/book/IBooksData";
 import IBookReviews from "../types/book/IBookReviews";
 import LocalStorageService from "./LocalStorageService";
 import IReviewEditRequest from "../types/book/IReviewEditRequest";
+import IBookCreateRequest from "../types/book/IBookCreateRequest";
+import IBookEditRequest from "../types/book/IBookEditRequest";
 
 const getAllBooks = (page: number) => {
     return axios.get<Array<IBooksData>>(`/api/book?page=${page}`);
@@ -80,6 +82,24 @@ const editReview = (data: IReviewEditRequest) => {
     });
 }
 
+const addBook = (data: IBookCreateRequest) => {
+    return axios.post(`/api/admin/books`, data, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
+const editBook = (data: IBookEditRequest) => {
+    return axios.patch(`/api/admin/books/${data.id}/edit`, data, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LocalStorageService.getUserToken()}`
+        },
+    });
+}
+
 const BooksService = {
     getAllBooks,
     getBookById,
@@ -90,7 +110,9 @@ const BooksService = {
     deleteBook,
     getAllReviews,
     deleteReview,
-    editReview
+    editReview,
+    addBook,
+    editBook
 };
 
 export default BooksService;

@@ -1,19 +1,30 @@
 import React, {useEffect, useState} from 'react';
 import IBooksData from "../../../types/book/IBooksData";
 import BooksService from "../../../services/BooksService";
-import {Button, Chip, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
+import {Button, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
 import DataTable, {TableColumn} from "react-data-table-component";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandedBookDetails from "./ExpandedBookDetails";
+import AddIcon from '@mui/icons-material/Add';
+import AddBookDialog from "./AddBookDialog";
+import EditBookDialog from "./EditBookDialog";
 
 const AdminBooksScreen = () => {
     const [books, setBooks] = useState<IBooksData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [addDialogOpen, setAddDialogOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [selectedBook, setSelectedBook] = useState<IBooksData | null>(null);
+
 
     useEffect(() => {
         fetchBooks();
+
+        if (selectedBook) {
+            setEditDialogOpen(true);
+        }
     }, []);
 
     const fetchBooks = () => {
@@ -50,11 +61,7 @@ const AdminBooksScreen = () => {
             selector: row => row.id,
             sortable: true,
         },
-        {
-            name: 'Title',
-            selector: row => row.title,
-            sortable: true,
-        },
+        createTooltipColumn('Title', (row) => row.title),
         {
             name: 'Type',
             selector: row => row.type,
@@ -133,7 +140,22 @@ const AdminBooksScreen = () => {
     ];
 
     const handleEdit = (row: IBooksData) => {
+        setSelectedBook(row);
+        setEditDialogOpen(true);
+    }
 
+    const handleEditDialogClose = () => {
+        setEditDialogOpen(false);
+        fetchBooks();
+    }
+
+    const handleAdd = () => {
+        setAddDialogOpen(true);
+    }
+
+    const handleAddDialogClose = () => {
+        setAddDialogOpen(false);
+        fetchBooks();
     }
 
     const handleDelete = (row: IBooksData) => {
@@ -154,7 +176,15 @@ const AdminBooksScreen = () => {
                     For columns with cut value, hover over with your cursor to view the full value.
                 </Typography>
             </Typography>
-            <Divider/>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleAdd()}
+                size="small"
+                startIcon={<AddIcon/>}
+            >
+                Add
+            </Button>
 
             {loading ?
                 (
@@ -194,11 +224,17 @@ const AdminBooksScreen = () => {
                     </Paper>
                 )}
 
-            {/*<EditOrderDialog*/}
-            {/*    open={editDialogOpen}*/}
-            {/*    onClose={handleEditDialogClose}*/}
-            {/*    rowData={selectedOrder}*/}
-            {/*/>*/}
+            <AddBookDialog
+                open={addDialogOpen}
+                onClose={handleAddDialogClose}
+            />
+
+
+            <EditBookDialog
+                open={editDialogOpen}
+                onClose={handleEditDialogClose}
+                rowData={selectedBook}
+            />
         </>
     );
 };

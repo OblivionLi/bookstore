@@ -38,6 +38,7 @@ public class BookEditRequest {
     private Double price;
     @Size(min = 1, message = "Book requires at least 1 author")
     private List<String> authors;
+    @ValidGenres
     private List<BookGenres> genres;
     @PastOrPresent(message = "Book release date must be in the past or present")
     @Temporal(TemporalType.DATE)

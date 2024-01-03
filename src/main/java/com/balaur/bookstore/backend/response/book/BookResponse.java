@@ -4,6 +4,7 @@ import com.balaur.bookstore.backend.response.rating.RatingResponse;
 import com.balaur.bookstore.backend.util.BookGenres;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -30,4 +31,11 @@ public class BookResponse {
     private List<RatingResponse> ratings;
     private double averageBookRating;
     private Integer quantity;
+    private String fileSize;
+    private String downloadLink;
+    private String duration;
+    private String narrator;
+    private String coverImage;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

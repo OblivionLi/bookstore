@@ -19,16 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
     private final BookService bookService;
 
-    @PostMapping()
-    public ResponseEntity<BookResponse> addBook(@RequestBody @Valid BookCreateRequest request) {
-        return bookService.addBook(request);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<BookResponse> editBook(@PathVariable Long id, @RequestBody @Valid BookEditRequest request) {
-        return bookService.editBook(id, request);
-    }
-
     @GetMapping("/{slug}")
     public ResponseEntity<BookResponse> getBook(@PathVariable String slug) {
         return bookService.getBook(slug);

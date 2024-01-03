@@ -16,7 +16,14 @@ export default interface IBooksData {
     ratings: RatingResponse[];
     averageBookRating: number;
     fileFormat: string;
-    quantity: number
+    quantity: number;
+    fileSize: string;
+    downloadLink: string;
+    duration: string;
+    narrator: string;
+    coverImage: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface RatingResponse {
