@@ -22,7 +22,7 @@ const getOrders = () => {
     });
 }
 
-const getOrder = (id: number) => {
+const getOrder = (id: string) => {
     return axios.get(`/api/orders/${id}`, {
         headers: {
             'Content-Type': 'application/json',

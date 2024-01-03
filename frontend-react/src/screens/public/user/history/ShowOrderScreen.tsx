@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import IOrdersData from "../../../../types/order/IOrdersData";
 import OrdersService from "../../../../services/OrdersService";
 import MainNavbar from "../../../../components/MainNavbar";
@@ -20,27 +20,31 @@ import {
 } from "@mui/material";
 
 const ShowOrderScreen = () => {
+    const navigate = useNavigate();
     const {id} = useParams<{ id: string }>();
     const [order, setOrder] = useState<IOrdersData | undefined>();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (id) {
-            fetchOrder();
-        }
+        fetchOrder();
     }, [id]);
 
     const fetchOrder = () => {
-        OrdersService.getOrder(parseInt(id!))
-            .then((response: any) => {
-                const orderData: IOrdersData = response?.data;
-                setOrder(orderData);
-                console.log(orderData);
-                setLoading(false);
-            })
-            .catch((e: Error) => {
-                console.log(e);
-            });
+        if (id) {
+            OrdersService.getOrder(id)
+                .then((response: any) => {
+                    const orderData: IOrdersData = response?.data;
+                    if (!orderData) {
+                        navigate("/orders-history");
+                    }
+
+                    setOrder(orderData);
+                    setLoading(false);
+                })
+                .catch((e: Error) => {
+                    console.log(e);
+                });
+        }
     }
 
     return (
@@ -64,7 +68,7 @@ const ShowOrderScreen = () => {
                                     <Chip
                                         label={order?.orderStatus}
                                         style={{
-                                            marginLeft:'10px',
+                                            marginLeft: '10px',
                                             backgroundColor: order?.orderStatus === 'Completed' ? 'green' : 'default',
                                             color: order?.orderStatus === 'Completed' ? 'white' : 'black'
                                         }}
@@ -76,14 +80,14 @@ const ShowOrderScreen = () => {
                                     <Chip
                                         label={order?.paymentStatus}
                                         style={{
-                                            marginLeft:'10px',
+                                            marginLeft: '10px',
                                             backgroundColor: order?.paymentStatus === 'Payed' ? 'green' : 'default',
                                             color: order?.paymentStatus === 'Payed' ? 'white' : 'black'
                                         }}
                                     />
                                 </Grid>
                             </Grid>
-                            <Divider sx={{ margin: '20px 0' }} />
+                            <Divider sx={{margin: '20px 0'}}/>
 
                             <Grid container spacing={3}>
                                 <Grid item xs={12} md={6} style={{display: 'flex'}}>

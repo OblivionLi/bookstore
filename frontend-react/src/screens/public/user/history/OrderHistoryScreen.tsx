@@ -4,7 +4,6 @@ import DataTable, {TableColumn} from 'react-data-table-component';
 import IOrdersData from "../../../../types/order/IOrdersData";
 import OrdersService from "../../../../services/OrdersService";
 import ExpandedOrderDetails from "../../../../components/order/ExpandedOrderDetails";
-import DataRow from "../../../../types/order/IDataRow";
 import BreadcrumbMulti from "../../../../components/breadcrumb/BreadcrumbMulti";
 import {Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Paper, Skeleton} from "@mui/material";
 import Box from "@mui/material/Box";
@@ -114,7 +113,7 @@ const OrderHistoryScreen = () => {
     }
 
     const handleShow = (row: IOrdersData) => {
-        navigate(`/order/${row.id}`);
+        navigate(`/order/${row.orderId}`);
     }
 
     const fetchOrders = () => {

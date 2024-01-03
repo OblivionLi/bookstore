@@ -258,7 +258,7 @@ public class OrderService {
         orderRepository.deleteAll();
     }
 
-    public ResponseEntity<OrderResponse> getOrder(Authentication authentication, Long id) {
+    public ResponseEntity<OrderResponse> getOrder(Authentication authentication, String id) {
         User authenticatedUser = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
 
         if (authenticatedUser == null) {
@@ -266,7 +266,7 @@ public class OrderService {
             throw new UsernameNotFoundException("User: " + authentication.getName() + " not found.");
         }
 
-        Optional<Order> order = orderRepository.findById(id);
+        Optional<Order> order = orderRepository.findByOrderIdAndUser(id, authenticatedUser);
         if (order.isEmpty()) {
             log.warn("[OrderService] " + new Date() + " | Couldn't find order.");
             return null;
