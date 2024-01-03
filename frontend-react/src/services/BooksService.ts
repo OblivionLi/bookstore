@@ -6,8 +6,14 @@ import IReviewEditRequest from "../types/book/IReviewEditRequest";
 import IBookCreateRequest from "../types/book/IBookCreateRequest";
 import IBookEditRequest from "../types/book/IBookEditRequest";
 
-const getAllBooks = (page: number) => {
-    return axios.get<Array<IBooksData>>(`/api/book?page=${page}`);
+const getAllBooks = (page: number, selectedFilter: string, searchTerm: string) => {
+    const params = new URLSearchParams({
+        page: String(page),
+        selectedFilter: selectedFilter,
+        searchTerm: searchTerm,
+    });
+
+    return axios.get<Array<IBooksData>>(`/api/book?${params}`);
 }
 
 const getBookById = (slug: string) => {

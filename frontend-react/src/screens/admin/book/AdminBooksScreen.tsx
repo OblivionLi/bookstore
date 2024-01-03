@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import IBooksData from "../../../types/book/IBooksData";
 import BooksService from "../../../services/BooksService";
-import {Button, Divider, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
+import {Button, Paper, Skeleton, Tooltip, Typography} from "@mui/material";
 import DataTable, {TableColumn} from "react-data-table-component";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/Edit";

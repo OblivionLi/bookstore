@@ -1,4 +1,4 @@
-package com.balaur.bookstore.backend.service;
+package com.balaur.bookstore.backend.service.book;
 
 import com.balaur.bookstore.backend.dto.BookDto;
 import com.balaur.bookstore.backend.request.book.ReviewRequest;
@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -40,6 +41,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final BookRatingRepository bookRatingRepository;
+    private final BookFilterService bookFilterService;
 
     public ResponseEntity<BookResponse> addBook(Authentication authentication, BookCreateRequest request) {
         User authenticatedUser = userRepository.findByEmail(((UserDetailsResponse) authentication.getPrincipal()).getEmail());
@@ -114,8 +116,15 @@ public class BookService {
         );
     }
 
-    public ResponseEntity<Page<BookResponse>> getAllBooks(int page, int size) {
-        Page<Book> books = bookRepository.findByDeletedFalse(PageRequest.of(page, size));
+    public ResponseEntity<Page<BookResponse>> getAllBooks(int page, int size, String selectedFilter, String searchTerm) {
+        Page<Book> books;
+
+        if (!searchTerm.isEmpty()) {
+            books = bookRepository.searchByTitleAndDeletedFalse(searchTerm, PageRequest.of(page, size));
+        } else {
+            books = bookFilterService.applyFilter(selectedFilter, page, size);
+        }
+
         if (books.isEmpty()) {
             log.warn("[BookService] " + new Date() + " | No books found.");
             throw new BookNotFoundException("No books found.");

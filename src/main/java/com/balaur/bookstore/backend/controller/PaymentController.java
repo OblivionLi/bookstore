@@ -2,7 +2,7 @@ package com.balaur.bookstore.backend.controller;
 
 import com.balaur.bookstore.backend.repository.payment.PaymentRepository;
 import com.balaur.bookstore.backend.request.payment.ChargePaymentRequest;
-import com.balaur.bookstore.backend.service.payment.PaymentService;
+import com.balaur.bookstore.backend.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -5,7 +5,18 @@ import IBooksData from "../../../types/book/IBooksData";
 import LocalStorageService from "../../../services/LocalStorageService";
 import BookFilters from "./filter/BookFilters";
 import MultiUsePagination from "../../../components/MultiUsePagination";
-import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Paper, Skeleton} from "@mui/material";
+import {
+    Button,
+    Card,
+    CardActionArea,
+    CardActions,
+    CardContent,
+    CardMedia, Divider,
+    FormControl,
+    Grid, Input, InputLabel,
+    Paper,
+    Skeleton, Stack
+} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {Link} from "react-router-dom";
 import {styled} from "@mui/material/styles";
@@ -22,11 +33,14 @@ function BooksListScreen() {
     const [totalPages, setTotalPages] = useState(0);
     const [userPermission, setUserPermission] = useState(["ROLE_ANONYMOUS"]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedFilter, setSelectedFilter] = useState('');
+
 
     useEffect(() => {
         fetchBooks();
         getUserPermissions();
-    }, [currentPage]);
+    }, [currentPage, selectedFilter]);
 
     const getUserPermissions = () => {
         setUserPermission(prevUserPermission => {
@@ -35,7 +49,7 @@ function BooksListScreen() {
     }
 
     const fetchBooks = () => {
-        BooksService.getAllBooks(currentPage)
+        BooksService.getAllBooks(currentPage, selectedFilter, searchTerm)
             .then((response: any) => {
                 setBooks(response.data?.content);
                 setTotalPages(response.data?.totalPages)
@@ -50,6 +64,18 @@ function BooksListScreen() {
         setCurrentPage(newPage);
     }
 
+    const handleFilterChange = (newFilter: string) => {
+        setSelectedFilter(newFilter);
+    };
+
+    const handleSearchChange = (newSearchTerm: string) => {
+        setSearchTerm(newSearchTerm);
+    };
+
+    const handleSearchClick = () => {
+        fetchBooks();
+    };
+
     const bookSkeleton = (
         <Grid item xs={12} sm={6} md={4} lg={4}>
             <Skeleton variant="rectangular" height={118} style={{marginBottom: '1rem'}}/>
@@ -61,7 +87,30 @@ function BooksListScreen() {
 
     return (
         <Paper elevation={3} style={{padding: '3rem', margin: '2rem'}}>
-            <BookFilters/>
+            <Grid container spacing={2} justifyContent="center">
+                <Grid item xs={12} sm={6} md={4}>
+                    <FormControl fullWidth sx={{ minWidth: 120, textAlign: 'center' }}>
+                        <InputLabel id="search-term-label">Search</InputLabel>
+                        <Input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6} md={2} sx={{ textAlign: 'center' }}>
+                    <Button variant="contained" color="primary" onClick={handleSearchClick}>
+                        Search
+                    </Button>
+                </Grid>
+            </Grid>
+            <Divider style={{ marginTop: '1rem', marginBottom: '1rem' }} />
+            <Grid container spacing={2} justifyContent="center">
+                <Grid item xs={12} sm={6} md={4}>
+                    <BookFilters selectedFilter={selectedFilter} setSelectedFilter={handleFilterChange} />
+                </Grid>
+            </Grid>
+            <Divider style={{ marginTop: '1rem', marginBottom: '1rem' }} />
             <Grid container spacing={2} justifyContent="center">
                 {loading ? Array.from(new Array(9)).map((_, index) => <React.Fragment key={index}>{bookSkeleton}</React.Fragment>) :
                     books && books.map((book, index) => (

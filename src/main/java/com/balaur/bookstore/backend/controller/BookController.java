@@ -1,11 +1,9 @@
 package com.balaur.bookstore.backend.controller;
 
-import com.balaur.bookstore.backend.request.book.BookCreateRequest;
-import com.balaur.bookstore.backend.request.book.BookEditRequest;
 import com.balaur.bookstore.backend.request.book.BookRatingRequest;
 import com.balaur.bookstore.backend.response.book.BookResponse;
 import com.balaur.bookstore.backend.response.book.BookReviewResponse;
-import com.balaur.bookstore.backend.service.*;
+import com.balaur.bookstore.backend.service.book.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,9 +25,11 @@ public class BookController {
     @GetMapping()
     public ResponseEntity<Page<BookResponse>> getAllBooks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam String selectedFilter,
+            @RequestParam String searchTerm
     ) {
-        return bookService.getAllBooks(page, size);
+        return bookService.getAllBooks(page, size, selectedFilter, searchTerm);
     }
 
     @PostMapping("/{id}/rating")

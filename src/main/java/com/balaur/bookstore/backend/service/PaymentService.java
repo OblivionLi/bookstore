@@ -1,4 +1,4 @@
-package com.balaur.bookstore.backend.service.payment;
+package com.balaur.bookstore.backend.service;
 
 import com.balaur.bookstore.backend.model.order.Order;
 import com.balaur.bookstore.backend.model.payment.Payment;
