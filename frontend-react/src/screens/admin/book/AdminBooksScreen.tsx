@@ -10,6 +10,8 @@ import ExpandedBookDetails from "./ExpandedBookDetails";
 import AddIcon from '@mui/icons-material/Add';
 import AddBookDialog from "./AddBookDialog";
 import EditBookDialog from "./EditBookDialog";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 const AdminBooksScreen = () => {
     const [books, setBooks] = useState<IBooksData[]>([]);
@@ -17,9 +19,16 @@ const AdminBooksScreen = () => {
     const [addDialogOpen, setAddDialogOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState<IBooksData | null>(null);
+    const navigate = useNavigate();
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
 
 
     useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+
         fetchBooks();
 
         if (selectedBook) {

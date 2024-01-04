@@ -4,8 +4,20 @@ import {Button, Chip, Dialog, DialogContent, DialogTitle, Divider, InputLabel, P
 import UtilsService from "../../../services/UtilsService";
 import IBookEditRequest from "../../../types/book/IBookEditRequest";
 import BooksService from "../../../services/BooksService";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 const EditBookDialog: React.FC<IBookEditModalProps> = ({open, onClose, rowData}) => {
+    const navigate = useNavigate();
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
+
+    useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+    }, []);
+
     const [formData, setFormData] = useState({
         isbn: rowData?.isbn || '',
         title: rowData?.title || '',

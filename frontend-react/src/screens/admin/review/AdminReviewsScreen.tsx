@@ -10,14 +10,23 @@ import ExpandedReviewDetails from "./ExpandedReviewDetails";
 import UtilsService from "../../../services/UtilsService";
 import IOrdersData from "../../../types/order/IOrdersData";
 import EditReviewDialog from "./EditReviewDialog";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 const AdminReviewsScreen = () => {
     const [reviews, setReviews] = useState<IReviews[]>([]);
     const [loading, setLoading] = useState(true);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedReview, setSelectedReview] = useState<IReviews | null>(null);
+    const navigate = useNavigate();
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
 
     useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+
         fetchReviews();
     }, []);
 

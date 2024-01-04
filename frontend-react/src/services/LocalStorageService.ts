@@ -2,6 +2,13 @@ import * as jose from 'jose';
 import IUserTokenDecodedData from "../types/user/IUserTokenDecodedData";
 import IBooksData from "../types/book/IBooksData";
 
+const isUserAuthorized = () => {
+    const isLoggedInAndTokenNotExpired = isUserLogged();
+    const hasPermissions = userHasPermissions();
+
+    return isLoggedInAndTokenNotExpired && hasPermissions;
+}
+
 const isUserLogged = () => {
     const token = localStorage.getItem("userInfo");
     return token && !isUserTokenExpired(token);
@@ -69,6 +76,20 @@ const getUserToken = () => {
     }
 
     return token;
+}
+
+const userHasPermissions = () => {
+    const token = localStorage.getItem("userInfo");
+    if (!token) {
+        return false;
+    }
+
+    try {
+        const claims: { roles: string[] } = jose.decodeJwt(token) as { roles: string[] };
+        return claims.roles.includes("ROLE_ADMIN");
+    } catch (error) {
+        return false;
+    }
 }
 
 const getUserPermissions = () => {
@@ -195,7 +216,8 @@ const LocalStorageService = {
     removeItemsFromCart,
     increaseItemQuantity,
     decreaseItemQuantity,
-    getEmailFromLocalStorage
+    getEmailFromLocalStorage,
+    isUserAuthorized
 }
 
 export default LocalStorageService;

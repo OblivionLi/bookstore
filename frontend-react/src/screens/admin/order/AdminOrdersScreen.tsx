@@ -10,14 +10,23 @@ import ExpandedOrderDetails from "../../../components/order/ExpandedOrderDetails
 import IUserResponse from "../../../types/user/IUserResponse";
 import EditOrderDialog from "./EditOrderDialog";
 import UtilsService from "../../../services/UtilsService";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 const AdminOrdersScreen = () => {
     const [orders, setOrders] = useState<IOrdersData[]>([]);
     const [loading, setLoading] = useState(true);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<IOrdersData | null>(null);
+    const navigate = useNavigate();
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
 
     useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+
         fetchOrders();
     }, []);
 

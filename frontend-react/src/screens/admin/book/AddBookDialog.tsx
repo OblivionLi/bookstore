@@ -1,12 +1,24 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Chip, Dialog, DialogContent, DialogTitle, Divider, InputLabel, Paper, TextField} from "@mui/material";
 import IBookCreateRequest from "../../../types/book/IBookCreateRequest";
 import BooksService from "../../../services/BooksService";
 import IBookAddModalProps from "../../../types/book/IBookAddModalProps";
 import UtilsService from "../../../services/UtilsService";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 
 const AddBookDialog:React.FC<IBookAddModalProps> = ({ open, onClose }) => {
+    const navigate = useNavigate();
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
+
+    useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+    }, []);
+
     const [formData, setFormData] = useState({
         type: '',
         isbn: '',

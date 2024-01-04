@@ -14,6 +14,8 @@ import IUserEditModalProps from "../../../types/user/IUserEditModalProps";
 import UsersService from "../../../services/UsersService";
 import IUsersRolesResponse from "../../../types/user/IUsersRolesResponse";
 import IUserEditRequest from "../../../types/user/IUserEditRequest";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 const EditUserDialog:React.FC<IUserEditModalProps> = ({ open, onClose, rowData }) => {
     const [allRoles, setAllRoles] = useState<IUsersRolesResponse>({ roles: [] });
@@ -26,7 +28,15 @@ const EditUserDialog:React.FC<IUserEditModalProps> = ({ open, onClose, rowData }
         email: '',
     });
 
+    const navigate = useNavigate();
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
+
     useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+
         fetchRoles();
         setSelectedRoles(rowData?.userGroupCodes || [])
         setFormData((prevFormData) => ({ ...prevFormData, email: rowData?.email || '' }));

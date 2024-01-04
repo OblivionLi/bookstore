@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Toolbar from "@mui/material/Toolbar";
 import {
     Box,
@@ -34,6 +34,14 @@ const drawerWidth = 240;
 const AdminScreen = () => {
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
+
+    useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+    }, []);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);

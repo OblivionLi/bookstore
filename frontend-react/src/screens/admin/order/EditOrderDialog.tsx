@@ -1,14 +1,25 @@
-import React, {FormEvent, useState} from 'react';
+import React, {FormEvent, useEffect, useState} from 'react';
 import {Button, Chip, Dialog, DialogContent, DialogTitle, Divider, InputLabel, Paper} from "@mui/material";
 import IOrderEditModalProps from "../../../types/order/IOrderEditModalProps";
 import IOrderEditRequest from "../../../types/order/IOrderEditRequest";
 import OrdersService from "../../../services/OrdersService";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../services/LocalStorageService";
 
 const EditOrderDialog:React.FC<IOrderEditModalProps> = ({ open, onClose, rowData }) => {
     const orderStatuses = ["New", "Processing", "Shipped", "Delivered", "Refunded", "Canceled"];
     const paymentStatuses = ["Pending", "Successful", "Failed", "Refunded", "Canceled"];
     const [selectedOrderStatus, setSelectedOrderStatus] = useState<string | null>(rowData?.orderStatus || null);
     const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<string | null>(rowData?.paymentStatus || null);
+    const navigate = useNavigate();
+    const isUserAuthorized = LocalStorageService.isUserAuthorized();
+
+    useEffect(() => {
+        if (!isUserAuthorized) {
+            navigate("/login");
+            return;
+        }
+    }, []);
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
