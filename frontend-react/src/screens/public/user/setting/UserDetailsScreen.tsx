@@ -10,6 +10,7 @@ import {Button, TextField} from "@mui/material";
 const UserDetailsScreen = ({ userData }: { userData: IUserTokenDecodedData }) => {
     const navigate = useNavigate();
     const [userRoles, setUserRoles] = useState("");
+    const isUserLogged = LocalStorageService.isUserLogged();
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -25,6 +26,11 @@ const UserDetailsScreen = ({ userData }: { userData: IUserTokenDecodedData }) =>
     });
 
     useEffect(() => {
+        if (!isUserLogged) {
+            navigate("/login");
+            return;
+        }
+
         if (userData) {
             setFormData((prevState) => ({
                 ...prevState,

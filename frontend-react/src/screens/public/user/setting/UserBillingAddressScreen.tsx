@@ -18,15 +18,24 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import AddressSkeleton from "../../../../components/AddressSkeleton";
+import LocalStorageService from "../../../../services/LocalStorageService";
+import {useNavigate} from "react-router-dom";
 
 const UserBillingAddressScreen = () => {
+    const navigate = useNavigate();
     const [billingAddresses, setBillingAddresses] = useState<Array<IUserBillingAddress>>([]);
     const [editedAddress, setEditedAddress] = useState<IUserBillingAddress | null>(null);
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [loading, setLoading] = useState(true);
+    const isUserLogged = LocalStorageService.isUserLogged();
 
     useEffect(() => {
+        if (!isUserLogged) {
+            navigate("/login");
+            return;
+        }
+
         fetchBillingAddresses();
     }, []);
 

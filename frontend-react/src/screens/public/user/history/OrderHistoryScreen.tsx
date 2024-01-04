@@ -13,6 +13,7 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import CheckoutForm from "./CheckoutForm";
 import {Elements} from "@stripe/react-stripe-js";
 import {loadStripe} from "@stripe/stripe-js";
+import LocalStorageService from "../../../../services/LocalStorageService";
 
 const stripePromise = loadStripe("pk_test_51ORDmvH7pzB8f6vMIobMlu8DUccIepw8c6ovdUvkVXqrwpvCXmDYDKuUmiHiHzgnj4N4ttoXLPTnCcHZ79AV3nfx00blu2Erei");
 
@@ -22,8 +23,14 @@ const OrderHistoryScreen = () => {
     const [loading, setLoading] = useState(true);
     const [openPay, setOpenPay] = useState(false);
     const [selectedRow, setSelectedRow] = useState<IOrdersData | null>(null);
+    const isUserLogged = LocalStorageService.isUserLogged();
 
     useEffect(() => {
+        if (!isUserLogged) {
+            navigate("/login");
+            return;
+        }
+
         fetchOrders();
     }, []);
 

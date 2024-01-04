@@ -13,7 +13,7 @@ import IUserShippingAddressRequest from "../../../types/user/IUserShippingAddres
 import IUserBillingAddressRequest from "../../../types/user/IUserBillingAddressRequest";
 import IPlaceOrderRequest from "../../../types/order/IPlaceOrderRequest";
 import OrdersService from "../../../services/OrdersService";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {Button, Divider, Grid, List, ListItem, Paper, TextField, Typography} from "@mui/material";
 
 const ShippingScreen = () => {
@@ -24,8 +24,14 @@ const ShippingScreen = () => {
     const [deliveryNotes, setDeliveryNotes] = useState("");
     const [openEditBilling, setOpenEditBilling] = useState(false);
     const [openEditShipping, setOpenEditShipping] = useState(false);
+    const isUserLogged = LocalStorageService.isUserLogged();
 
     useEffect(() => {
+        if (!isUserLogged) {
+            navigate("/login");
+            return;
+        }
+
         fetchDefaultShippingAddress();
         fetchDefaultBillingAddress();
     }, []);

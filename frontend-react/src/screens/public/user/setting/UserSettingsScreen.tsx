@@ -15,12 +15,12 @@ const UserSettingsScreen = () => {
     const navigate = useNavigate();
     const userData = LocalStorageService.getUserData() as IUserTokenDecodedData;
     const [selectedForm, setSelectedForm] = useState<string | null>('user-details');
+    const isUserLogged = LocalStorageService.isUserLogged();
 
     const checkTokenAndRedirect = () => {
-        const isUserLoggedIn = LocalStorageService.isUserLogged();
-
-        if (!isUserLoggedIn) {
-            navigate("/");
+        if (!isUserLogged) {
+            navigate("/login");
+            return;
         }
     }
 

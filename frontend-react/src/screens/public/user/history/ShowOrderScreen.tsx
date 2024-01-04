@@ -18,14 +18,21 @@ import {
     TableRow,
     TableBody, Grid, Card, CardContent, makeStyles, Theme, Chip
 } from "@mui/material";
+import LocalStorageService from "../../../../services/LocalStorageService";
 
 const ShowOrderScreen = () => {
     const navigate = useNavigate();
     const {id} = useParams<{ id: string }>();
     const [order, setOrder] = useState<IOrdersData | undefined>();
     const [loading, setLoading] = useState(true);
+    const isUserLogged = LocalStorageService.isUserLogged();
 
     useEffect(() => {
+        if (!isUserLogged) {
+            navigate("/login");
+            return;
+        }
+
         fetchOrder();
     }, [id]);
 

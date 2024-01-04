@@ -16,15 +16,24 @@ import {
     Button, Modal, Grid, Skeleton
 } from "@mui/material";
 import AddressSkeleton from "../../../../components/AddressSkeleton";
+import {useNavigate} from "react-router-dom";
+import LocalStorageService from "../../../../services/LocalStorageService";
 
 const UserShippingAddressScreen = () => {
+    const navigate = useNavigate();
     const [shippingAddresses, setShippingAddresses] = useState<Array<IUserShippingAddress>>([]);
     const [editedAddress, setEditedAddress] = useState<IUserShippingAddress | null>(null);
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [loading, setLoading] = useState(true);
+    const isUserLogged = LocalStorageService.isUserLogged();
 
     useEffect(() => {
+        if (!isUserLogged) {
+            navigate("/login");
+            return;
+        }
+
         fetchShippingAddresses();
     }, []);
 
