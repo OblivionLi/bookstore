@@ -14,15 +14,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
-    private final PaymentRepository paymentRepository;
+//    private final PaymentRepository paymentRepository;
 
     @PostMapping("/charge")
     public ResponseEntity<Map<String, String>> chargeCard(@RequestBody ChargePaymentRequest request) {
         return paymentService.chargeCard(request);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteAll() {
-        paymentRepository.deleteAll();
-    }
+//    @DeleteMapping("/delete")
+//    public void deleteAll() {
+//        paymentRepository.deleteAll();
+//    }
 }

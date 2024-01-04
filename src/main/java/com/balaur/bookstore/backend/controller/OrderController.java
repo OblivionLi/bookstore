@@ -33,8 +33,8 @@ public class OrderController {
         return orderService.getOrder(authentication, id);
     }
 
-    @DeleteMapping("/orders")
-    public void deleteOrders() {
-        orderService.deleteOrders();
-    }
+//    @DeleteMapping("/orders")
+//    public void deleteOrders() {
+//        orderService.deleteOrders();
+//    }
 }

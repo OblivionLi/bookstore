@@ -64,8 +64,8 @@ public class UserController {
     }
 
     // TODO: this doesnt have a need in prod.
-    @DeleteMapping("/delete/users")
-    public void deleteAllUsers() {
-        userService.deleteAllUsers();
-    }
+//    @DeleteMapping("/delete/users")
+//    public void deleteAllUsers() {
+//        userService.deleteAllUsers();
+//    }
 }

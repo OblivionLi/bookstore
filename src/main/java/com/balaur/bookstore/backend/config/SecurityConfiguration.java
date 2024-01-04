@@ -37,10 +37,59 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/auth/login"), mvcMatcherBuilder.pattern("/api/auth/register")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/change-email")).authenticated()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/change-password")).authenticated()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/change-name")).authenticated()
+                        // anonymous
+                        .requestMatchers(
+                                mvcMatcherBuilder.pattern("/api/auth/login"),
+                                mvcMatcherBuilder.pattern("/api/auth/register"),
+                                mvcMatcherBuilder.pattern("/api/auth/forgot-password"),
+                                mvcMatcherBuilder.pattern("/api/auth/reset-password/{token}"),
+                                mvcMatcherBuilder.pattern("/api/auth/reset-password")
+                        ).permitAll()
+
+                        // user
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/change-details")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/shipping-address")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/default/{type}-address")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/billing-address")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/address/{id}/mark-default")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/address/{idAndType}/delete")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/add-address")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/user/edit-address")).authenticated()
+
+                        // payment
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/payment/charge")).authenticated()
+
+                        // orders
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/order/placeorder")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/orders")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/orders/{id}")).authenticated()
+
+                        // book
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book/{slug}")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book/{id}/rating")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book/rating/{ratingId}")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book/{id}/rating")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book/{id}/reviews")).authenticated()
+
+                        // admin
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/users")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/users/roles")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/users/{id}/edit")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/users/{id}/delete")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/users/{id}/lock")).hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/orders")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/orders/{id}/edit")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/orders/{id}/delete")).hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/books")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/books/{id}/edit")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/books/{id}/delete")).hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/reviews")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/reviews/{id}/edit")).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/admin/reviews/{id}/delete")).hasAuthority("ROLE_ADMIN")
 
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                         .anyRequest().permitAll()
