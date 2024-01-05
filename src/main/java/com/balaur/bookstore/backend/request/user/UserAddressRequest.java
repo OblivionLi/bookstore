@@ -25,20 +25,4 @@ public class UserAddressRequest {
     @JsonProperty
     private boolean isDefault;
     private String recipientName;
-
-    @Override
-    public String toString() {
-        return "UserAddressRequest{" +
-                "addressType='" + addressType + '\'' +
-                ", street='" + street + '\'' +
-                ", city='" + city + '\'' +
-                ", state='" + state + '\'' +
-                ", country='" + country + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", zipcode='" + zipcode + '\'' +
-                ", billingName='" + billingName + '\'' +
-                ", isDefault=" + isDefault +
-                ", recipientName='" + recipientName + '\'' +
-                '}';
-    }
 }

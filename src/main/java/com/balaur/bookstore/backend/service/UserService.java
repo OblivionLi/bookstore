@@ -48,7 +48,6 @@ public class UserService implements UserDetailsService {
     private final UserGroupRepository userGroupRepository;
     private final UserAuthenticationProvider userAuthenticationProvider;
     private final EmailServiceImpl emailService;
-    private final BookRatingRepository bookRatingRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -73,8 +72,6 @@ public class UserService implements UserDetailsService {
             log.warn("[UserService] " + new Date() + " | User already exist.");
             throw new UserFoundException("User already exist.");
         }
-
-        // TODO:: increase password validation
 
         String encryptedPassword = passwordEncoder.encode(request.getPassword());
 
@@ -324,10 +321,10 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void deleteAllUsers() {
-        List<User> users = userRepository.findAll();
-        userRepository.deleteAll(users);
-    }
+//    public void deleteAllUsers() {
+//        List<User> users = userRepository.findAll();
+//        userRepository.deleteAll(users);
+//    }
 
     public ResponseEntity<List<UserShippingAddressResponse>> getUserShippingAddress(Authentication authentication) {
         User user = userRepository.findByEmail((((UserDetailsResponse) authentication.getPrincipal()).getEmail()));
