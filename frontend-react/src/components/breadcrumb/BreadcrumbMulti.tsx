@@ -1,7 +1,7 @@
 import React from 'react';
 import IBreadcrumbProps from "../../types/IBreadcrumbProps";
 import {Link} from "react-router-dom";
-import {Breadcrumbs, Divider} from "@mui/material";
+import {Breadcrumbs} from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 const BreadcrumbMulti: React.FC<IBreadcrumbProps> = ({items}) => {

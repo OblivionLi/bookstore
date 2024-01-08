@@ -1,6 +1,5 @@
 import React from 'react';
-import {ExpanderComponentProps, TableColumn} from "react-data-table-component";
-import DataRow from "../../types/order/IDataRow";
+import {ExpanderComponentProps} from "react-data-table-component";
 import OrderLineItem from "../../types/order/IOrderLineItem";
 import {
     Typography,

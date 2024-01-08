@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    image: dockerfile-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/bookstore
+    command: [ "./wait-for-it.sh", "database:3307", "java", "-jar", "app.jar" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - ./backend-data:/app/data
+  database:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - ./database-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bookstore
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  frontend:
+    image: dockerfile-frontend
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

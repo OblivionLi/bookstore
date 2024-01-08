@@ -299,7 +299,6 @@ public class UserService implements UserDetailsService {
             user.setPassword(password);
         }
 
-
         try {
             userRepository.save(user);
             UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder()
