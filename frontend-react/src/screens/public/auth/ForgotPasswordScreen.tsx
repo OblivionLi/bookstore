@@ -32,7 +32,7 @@ const ForgotPasswordScreen = () => {
     return (
         <>
             <MainNavbar/>
-            <BreadcrumbMulti items={["Register"]}/>
+            <BreadcrumbMulti items={["Forgot Password"]}/>
             <Paper elevation={3}
                    sx={{padding: 3, marginTop: 3, width: '85%', marginLeft: 'auto', marginRight: 'auto'}}>
                 <form onSubmit={handleSubmit}>

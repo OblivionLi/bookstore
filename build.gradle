@@ -36,6 +36,8 @@ dependencies {
 	implementation 'com.auth0:java-jwt:4.4.0'
 	implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.0'
 	implementation 'com.stripe:stripe-java:24.9.0'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.2.1'
+	implementation 'io.micrometer:micrometer-registry-prometheus:1.12.1'
 }
 
 tasks.named('test') {

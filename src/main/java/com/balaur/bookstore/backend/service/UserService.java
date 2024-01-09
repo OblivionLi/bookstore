@@ -82,13 +82,22 @@ public class UserService implements UserDetailsService {
         newUser.setPassword(encryptedPassword);
         newUser.setLocked(false);
 
-        String userRoleValue = "ROLE_" + UserRoles.USER;
+        String userRoleValue;
+        long users = userRepository.count();
+        if (users == 0) {
+            // assign first user in the database as admin
+            userRoleValue = "ROLE_" + UserRoles.ADMIN;
+        } else {
+            userRoleValue = "ROLE_" + UserRoles.USER;
+        }
+
         UserGroup userGroup = userGroupRepository.findByCode(userRoleValue);
         if (userGroup == null) {
             UserGroup newUserGroup = new UserGroup();
             newUserGroup.setCode(userRoleValue);
             userGroup = userGroupRepository.save(newUserGroup);
 
+            System.out.println("UPDATED");
             log.info("[UserService] " + new Date() + " | Created new user group: " + newUserGroup);
         }
 

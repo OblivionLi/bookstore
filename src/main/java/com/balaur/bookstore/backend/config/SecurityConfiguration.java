@@ -43,7 +43,9 @@ public class SecurityConfiguration {
                                 mvcMatcherBuilder.pattern("/api/auth/register"),
                                 mvcMatcherBuilder.pattern("/api/auth/forgot-password"),
                                 mvcMatcherBuilder.pattern("/api/auth/reset-password/{token}"),
-                                mvcMatcherBuilder.pattern("/api/auth/reset-password")
+                                mvcMatcherBuilder.pattern("/api/auth/reset-password"),
+                                mvcMatcherBuilder.pattern("/api/book"),
+                                mvcMatcherBuilder.pattern("/api/book/{slug}")
                         ).permitAll()
 
                         // user
@@ -65,8 +67,6 @@ public class SecurityConfiguration {
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/orders/{id}")).authenticated()
 
                         // book
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book")).authenticated()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/book/{slug}")).authenticated()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/book/{id}/rating")).authenticated()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/book/rating/{ratingId}")).authenticated()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/book/{id}/rating")).authenticated()
